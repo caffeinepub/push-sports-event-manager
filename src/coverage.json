@@ -1,0 +1,343 @@
+{
+  "kind": "coverage_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-18T09:11:27.355Z",
+  "sources": {
+    "buildRequest": true,
+    "implementationPlan": true
+  },
+  "requirements": {
+    "total": 12,
+    "implemented": 11,
+    "items": [
+      {
+        "id": "REQ-1",
+        "summary": "Implement single-user event data model and persistence in the Motoko backend, including create/read/update/delete operations for events and derived fields needed by the UI (pendingAmount, payment status, etc.).",
+        "status": "unknown",
+        "plannedFiles": [],
+        "matchedFiles": []
+      },
+      {
+        "id": "REQ-10",
+        "summary": "Add a voice input feature on the Add Event screen: provide a microphone button that uses browser speech-to-text to capture a spoken booking sentence and auto-fill matching form fields (event name/type/date/time, organizer, amounts, requirements flags, location when stated).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/voice/speechToText.ts",
+          "frontend/src/voice/bookingParser.ts",
+          "frontend/src/components/events/VoiceInputButton.tsx",
+          "frontend/src/components/events/EventForm.tsx",
+          "frontend/src/pages/AddEventPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/events/VoiceInputButton.tsx",
+          "frontend/src/components/events/EventForm.tsx",
+          "frontend/src/pages/AddEventPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-11",
+        "summary": "Add a simple single-user access approach suitable for personal internal use (no multi-user sharing).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/components/auth/LoginButton.tsx",
+          "frontend/src/hooks/useAuthz.ts",
+          "frontend/src/components/auth/ProfileSetupModal.tsx",
+          "frontend/src/components/auth/AccessDeniedScreen.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/useEvents.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/auth/LoginButton.tsx",
+          "frontend/src/components/auth/ProfileSetupModal.tsx",
+          "frontend/src/components/auth/AccessDeniedScreen.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-12",
+        "summary": "Generate and include basic static visual assets for the app (icon and a subtle sports-themed background/empty state) and render them from frontend static assets.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/assets/generated/app-icon.dim_512x512.png",
+          "frontend/public/assets/generated/sports-bg.dim_1080x1920.png",
+          "frontend/public/assets/generated/empty-events.dim_1200x800.png",
+          "frontend/src/components/branding/AppBranding.tsx",
+          "frontend/src/components/empty/EmptyState.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/pages/HomeDashboard.tsx",
+          "frontend/src/pages/CalendarPage.tsx",
+          "frontend/src/pages/PaymentsPage.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/public/assets/generated/app-icon.dim_512x512.png",
+          "frontend/public/assets/generated/sports-bg.dim_1080x1920.png",
+          "frontend/public/assets/generated/empty-events.dim_1200x800.png",
+          "frontend/src/components/branding/AppBranding.tsx",
+          "frontend/src/components/empty/EmptyState.tsx",
+          "frontend/src/components/layout/AppShell.tsx",
+          "frontend/src/pages/HomeDashboard.tsx",
+          "frontend/src/pages/CalendarPage.tsx",
+          "frontend/src/pages/PaymentsPage.tsx"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Create a mobile-first dark sports themed UI system and app layout, including a persistent bottom navigation bar with tabs: Home, Calendar, Add Event, Payments.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/BottomNav.tsx",
+          "frontend/src/components/layout/AppShell.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/index.css",
+          "frontend/src/App.tsx",
+          "frontend/src/components/layout/BottomNav.tsx",
+          "frontend/src/components/layout/AppShell.tsx"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Build the Dashboard (Home screen) to display: Total Events This Month, Upcoming Events (Next 7 Days), Total Revenue This Month, Total Pending Payments, and quick actions (+ Add New Event, Calendar View).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/HomeDashboard.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/hooks/useEvents.ts",
+          "frontend/src/utils/eventMetrics.ts"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/HomeDashboard.tsx",
+          "frontend/src/App.tsx",
+          "frontend/src/utils/eventMetrics.ts"
+        ]
+      },
+      {
+        "id": "REQ-4",
+        "summary": "Implement the Add New Event form with all specified fields, validation, and auto-calculation of Pending Amount (Total Event Amount - Advance Paid). Include autosave/draft behavior to prevent losing data on navigation/refresh.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/AddEventPage.tsx",
+          "frontend/src/components/events/EventForm.tsx",
+          "frontend/src/hooks/useEventDraft.ts",
+          "frontend/src/utils/eventValidation.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/AddEventPage.tsx",
+          "frontend/src/components/events/EventForm.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-5",
+        "summary": "Implement Event Details screen that displays all event information including payment summary and requirements checklist, and provides actions: Edit, Delete, Mark as Completed.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/EventDetailsPage.tsx",
+          "frontend/src/pages/EditEventPage.tsx",
+          "frontend/src/components/events/DeleteEventDialog.tsx",
+          "frontend/src/hooks/useEvents.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/EventDetailsPage.tsx",
+          "frontend/src/pages/EditEventPage.tsx",
+          "frontend/src/components/events/DeleteEventDialog.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-6",
+        "summary": "Create a Monthly Calendar view that supports selecting a date to view that day’s events list, and selecting an event to open its details. Add visual highlighting rules: upcoming events in green, today’s events in blue, and events with overdue payments marked with a red indicator.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/CalendarPage.tsx",
+          "frontend/src/components/calendar/MonthGrid.tsx",
+          "frontend/src/utils/date.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/CalendarPage.tsx",
+          "frontend/src/utils/date.ts",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-7",
+        "summary": "Implement a Payments screen that lists all events with pendingAmount > 0, displays total pending amount, and supports filtering by month.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/pages/PaymentsPage.tsx",
+          "frontend/src/hooks/useEvents.ts",
+          "frontend/src/App.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/pages/PaymentsPage.tsx",
+          "frontend/src/App.tsx"
+        ]
+      },
+      {
+        "id": "REQ-8",
+        "summary": "Add an offline-capable storage strategy: cache events locally for fast load and offline access, and sync changes to the Motoko backend when connectivity is available (single-user).",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/offline/offlineStore.ts",
+          "frontend/src/hooks/useConnectivity.ts",
+          "frontend/src/offline/syncEngine.ts",
+          "frontend/src/hooks/useEvents.ts",
+          "frontend/src/components/status/SyncStatusBar.tsx",
+          "frontend/src/components/layout/AppShell.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/hooks/useConnectivity.ts",
+          "frontend/src/components/status/SyncStatusBar.tsx",
+          "frontend/src/components/layout/AppShell.tsx"
+        ]
+      },
+      {
+        "id": "REQ-9",
+        "summary": "Implement an in-browser reminder system that triggers local notifications (where supported) for: 1 day before an event, the morning of the event, and payment reminders when pendingAmount > 0.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/src/reminders/reminderEngine.ts",
+          "frontend/src/hooks/useReminders.ts",
+          "frontend/src/components/reminders/RemindersPanel.tsx",
+          "frontend/src/components/layout/AppShell.tsx"
+        ],
+        "matchedFiles": [
+          "frontend/src/components/layout/AppShell.tsx"
+        ]
+      }
+    ]
+  },
+  "changedFiles": [
+    "backend/authorization/MixinAuthorization.mo",
+    "backend/authorization/access-control.mo",
+    "backend/main.mo",
+    "build-request.json",
+    "build-template/Dockerfile",
+    "build-template/LICENSE",
+    "build-template/README.md",
+    "build-template/deploy.sh",
+    "build-template/icp.yaml",
+    "build-template/package.json",
+    "build-template/pnpm-lock.yaml",
+    "build-template/pnpm-workspace.yaml",
+    "build-template/scripts/prune-unused-images.js",
+    "build-template/scripts/resize-images.js",
+    "build-template/src/backend/canister.yaml",
+    "build-template/src/backend/system-idl/aaaaa-aa.did",
+    "build-template/src/frontend/canister.yaml",
+    "build-template/src/frontend/components.json",
+    "build-template/src/frontend/env.json",
+    "build-template/src/frontend/eslint-rules/no-bigint-in-query-keys.js",
+    "build-template/src/frontend/eslint-rules/require-internet-identity-provider.js",
+    "build-template/src/frontend/eslint.config.js",
+    "build-template/src/frontend/package.json",
+    "build-template/src/frontend/postcss.config.js",
+    "build-template/src/frontend/src/components/ui/accordion.tsx",
+    "build-template/src/frontend/src/components/ui/alert-dialog.tsx",
+    "build-template/src/frontend/src/components/ui/alert.tsx",
+    "build-template/src/frontend/src/components/ui/aspect-ratio.tsx",
+    "build-template/src/frontend/src/components/ui/avatar.tsx",
+    "build-template/src/frontend/src/components/ui/badge.tsx",
+    "build-template/src/frontend/src/components/ui/breadcrumb.tsx",
+    "build-template/src/frontend/src/components/ui/button.tsx",
+    "build-template/src/frontend/src/components/ui/calendar.tsx",
+    "build-template/src/frontend/src/components/ui/card.tsx",
+    "build-template/src/frontend/src/components/ui/carousel.tsx",
+    "build-template/src/frontend/src/components/ui/chart.tsx",
+    "build-template/src/frontend/src/components/ui/checkbox.tsx",
+    "build-template/src/frontend/src/components/ui/collapsible.tsx",
+    "build-template/src/frontend/src/components/ui/command.tsx",
+    "build-template/src/frontend/src/components/ui/context-menu.tsx",
+    "build-template/src/frontend/src/components/ui/dialog.tsx",
+    "build-template/src/frontend/src/components/ui/drawer.tsx",
+    "build-template/src/frontend/src/components/ui/dropdown-menu.tsx",
+    "build-template/src/frontend/src/components/ui/form.tsx",
+    "build-template/src/frontend/src/components/ui/hover-card.tsx",
+    "build-template/src/frontend/src/components/ui/input-otp.tsx",
+    "build-template/src/frontend/src/components/ui/input.tsx",
+    "build-template/src/frontend/src/components/ui/label.tsx",
+    "build-template/src/frontend/src/components/ui/menubar.tsx",
+    "build-template/src/frontend/src/components/ui/navigation-menu.tsx",
+    "build-template/src/frontend/src/components/ui/pagination.tsx",
+    "build-template/src/frontend/src/components/ui/popover.tsx",
+    "build-template/src/frontend/src/components/ui/progress.tsx",
+    "build-template/src/frontend/src/components/ui/radio-group.tsx",
+    "build-template/src/frontend/src/components/ui/resizable.tsx",
+    "build-template/src/frontend/src/components/ui/scroll-area.tsx",
+    "build-template/src/frontend/src/components/ui/select.tsx",
+    "build-template/src/frontend/src/components/ui/separator.tsx",
+    "build-template/src/frontend/src/components/ui/sheet.tsx",
+    "build-template/src/frontend/src/components/ui/sidebar.tsx",
+    "build-template/src/frontend/src/components/ui/skeleton.tsx",
+    "build-template/src/frontend/src/components/ui/slider.tsx",
+    "build-template/src/frontend/src/components/ui/sonner.tsx",
+    "build-template/src/frontend/src/components/ui/switch.tsx",
+    "build-template/src/frontend/src/components/ui/table.tsx",
+    "build-template/src/frontend/src/components/ui/tabs.tsx",
+    "build-template/src/frontend/src/components/ui/textarea.tsx",
+    "build-template/src/frontend/src/components/ui/toggle-group.tsx",
+    "build-template/src/frontend/src/components/ui/toggle.tsx",
+    "build-template/src/frontend/src/components/ui/tooltip.tsx",
+    "build-template/src/frontend/src/hooks/use-mobile.tsx",
+    "build-template/src/frontend/src/lib/utils.ts",
+    "build-template/src/frontend/tsconfig.json",
+    "build-template/src/frontend/vite.config.js",
+    "build-template/tsconfig.json",
+    "caffeine.lock.json",
+    "feature_evidence.json",
+    "frontend-file-summaries.txt",
+    "frontend-implementation-plan.json",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/public/assets/generated/app-icon.dim_512x512.png",
+    "frontend/public/assets/generated/empty-events.dim_1200x800.png",
+    "frontend/public/assets/generated/sports-bg.dim_1080x1920.png",
+    "frontend/src/App.tsx",
+    "frontend/src/backend.d.ts",
+    "frontend/src/backend.ts",
+    "frontend/src/components/auth/AccessDeniedScreen.tsx",
+    "frontend/src/components/auth/LoginButton.tsx",
+    "frontend/src/components/auth/ProfileSetupModal.tsx",
+    "frontend/src/components/branding/AppBranding.tsx",
+    "frontend/src/components/empty/EmptyState.tsx",
+    "frontend/src/components/events/DeleteEventDialog.tsx",
+    "frontend/src/components/events/EventForm.tsx",
+    "frontend/src/components/events/VoiceInputButton.tsx",
+    "frontend/src/components/layout/AppShell.tsx",
+    "frontend/src/components/layout/BottomNav.tsx",
+    "frontend/src/components/status/SyncStatusBar.tsx",
+    "frontend/src/config.ts",
+    "frontend/src/declarations/backend.did.d.ts",
+    "frontend/src/declarations/backend.did.js",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useConnectivity.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useQueries.ts",
+    "frontend/src/hooks/useSpeechRecognition.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/AddEventPage.tsx",
+    "frontend/src/pages/CalendarPage.tsx",
+    "frontend/src/pages/EditEventPage.tsx",
+    "frontend/src/pages/EventDetailsPage.tsx",
+    "frontend/src/pages/HomeDashboard.tsx",
+    "frontend/src/pages/PaymentsPage.tsx",
+    "frontend/src/ui-summary.json",
+    "frontend/src/utils/StorageClient.ts",
+    "frontend/src/utils/bookingParser.ts",
+    "frontend/src/utils/date.ts",
+    "frontend/src/utils/eventAdapter.ts",
+    "frontend/src/utils/eventMetrics.ts",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json",
+    "scratch/component-selection.json",
+    "spec.md",
+    "spec_vs_diff_report.json"
+  ]
+}

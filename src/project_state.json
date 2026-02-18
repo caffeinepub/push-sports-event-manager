@@ -1,0 +1,174 @@
+{
+  "schemaVersion": "1.0.0",
+  "projectStateVersion": 3,
+  "summary": "Mobile-first single-user personal sports event manager (Push Sports Event Manager) with dashboard, calendar, event CRUD, reminders/notifications, payments tracking, offline secure storage, and voice input for quick event creation.",
+  "architectural_notes": [
+    "Single-user (personal/internal use) app; no multi-user access required.",
+    "Offline-capable local data storage with autosave; store data securely on-device.",
+    "Pending Amount is auto-calculated (Total Event Amount - Advance Paid).",
+    "Notifications required: 1 day before event, event morning, and pending-payment reminders.",
+    "Voice input uses speech-to-text and intent/field extraction to populate Add Event form.",
+    "Mobile-first design with dark sports theme and bottom navigation (Home/Calendar/Add/Payments)."
+  ],
+  "known_issues": [],
+  "isFixRequest": false,
+  "imageRequirements": "## Required Images\n- App icon in a minimal sports style, dark theme with high contrast (app-icon.dim_512x512.png)\n- Subtle dark sports texture/background illustration (sports-bg.dim_1080x1920.png)\n- Empty state illustration for no events scheduled, dark sports theme (empty-events.dim_1200x800.png)",
+  "existing_features": [
+    {
+      "id": "feature-create-a-mobile-first-dark-sports-themed-ui-system-and-app-layout-including-a-persistent-bottom-navigation-bar-with-tabs-home-calendar-add-event-payments",
+      "title": "Create a mobile-first dark sports themed UI system and app layout, including a persistent bottom navigation bar with tabs: Home, Calendar, Add Event, Payments.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-build-the-dashboard-home-screen-to-display-total-events-this-month-upcoming-events-next-7-days-total-revenue-this-month-total-pending-payments-and-quick-actions-add-new-event-calendar-view",
+      "title": "Build the Dashboard (Home screen) to display: Total Events This Month, Upcoming Events (Next 7 Days), Total Revenue This Month, Total Pending Payments, and quick actions (+ Add New Event, Calendar View).",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-the-add-new-event-form-with-all-specified-fields-validation-and-auto-calculation-of-pending-amount-total-event-amount-advance-paid-include-autosave-draft-behavior-to-prevent-losing-data-on-navigation-refresh",
+      "title": "Implement the Add New Event form with all specified fields, validation, and auto-calculation of Pending Amount (Total Event Amount - Advance Paid). Include autosave/draft behavior to prevent losing data on navigation/refresh.",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-event-details-screen-that-displays-all-event-information-including-payment-summary-and-requirements-checklist-and-provides-actions-edit-delete-mark-as-completed",
+      "title": "Implement Event Details screen that displays all event information including payment summary and requirements checklist, and provides actions: Edit, Delete, Mark as Completed.",
+      "reqIds": [
+        "REQ-5"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-create-a-monthly-calendar-view-that-supports-selecting-a-date-to-view-that-day-s-events-list-and-selecting-an-event-to-open-its-details-add-visual-highlighting-rules-upcoming-events-in-green-today-s-events-in-blue-and-events-with-overdue-payments-marked-with-a-red-indicator",
+      "title": "Create a Monthly Calendar view that supports selecting a date to view that day’s events list, and selecting an event to open its details. Add visual highlighting rules: upcoming events in green, today’s events in blue, and events with overdue payments marked with a red indicator.",
+      "reqIds": [
+        "REQ-6"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-a-payments-screen-that-lists-all-events-with-pendingamount-0-displays-total-pending-amount-and-supports-filtering-by-month",
+      "title": "Implement a Payments screen that lists all events with pendingAmount > 0, displays total pending amount, and supports filtering by month.",
+      "reqIds": [
+        "REQ-7"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-an-offline-capable-storage-strategy-cache-events-locally-for-fast-load-and-offline-access-and-sync-changes-to-the-motoko-backend-when-connectivity-is-available-single-user",
+      "title": "Add an offline-capable storage strategy: cache events locally for fast load and offline access, and sync changes to the Motoko backend when connectivity is available (single-user).",
+      "reqIds": [
+        "REQ-8"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-implement-an-in-browser-reminder-system-that-triggers-local-notifications-where-supported-for-1-day-before-an-event-the-morning-of-the-event-and-payment-reminders-when-pendingamount-0",
+      "title": "Implement an in-browser reminder system that triggers local notifications (where supported) for: 1 day before an event, the morning of the event, and payment reminders when pendingAmount > 0.",
+      "reqIds": [
+        "REQ-9"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-voice-input-feature-on-the-add-event-screen-provide-a-microphone-button-that-uses-browser-speech-to-text-to-capture-a-spoken-booking-sentence-and-auto-fill-matching-form-fields-event-name-type-date-time-organizer-amounts-requirements-flags-location-when-stated",
+      "title": "Add a voice input feature on the Add Event screen: provide a microphone button that uses browser speech-to-text to capture a spoken booking sentence and auto-fill matching form fields (event name/type/date/time, organizer, amounts, requirements flags, location when stated).",
+      "reqIds": [
+        "REQ-10"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-add-a-simple-single-user-access-approach-suitable-for-personal-internal-use-no-multi-user-sharing",
+      "title": "Add a simple single-user access approach suitable for personal internal use (no multi-user sharing).",
+      "reqIds": [
+        "REQ-11"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-generate-and-include-basic-static-visual-assets-for-the-app-icon-and-a-subtle-sports-themed-background-empty-state-and-render-them-from-frontend-static-assets",
+      "title": "Generate and include basic static visual assets for the app (icon and a subtle sports-themed background/empty state) and render them from frontend static assets.",
+      "reqIds": [
+        "REQ-12"
+      ],
+      "version": 1
+    }
+  ],
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Dashboard (Home) showing monthly totals, upcoming events, revenue, pending payments, and quick actions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-2",
+      "summary": "Add New Event form with required fields, event type dropdown, requirements checkboxes, status, and auto-calculated pending amount",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-3",
+      "summary": "Monthly Calendar view with date-to-events list, event details navigation, and color/indicator highlights (upcoming/today/overdue payments)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-4",
+      "summary": "Event Details page with full info, payment summary, requirements checklist, edit/delete, and mark completed actions",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-5",
+      "summary": "Reminder/notification system (1 day before, event morning, and payment reminders when pending amount > 0)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-6",
+      "summary": "Voice input (speech-to-text) on Add Event page to parse spoken commands and auto-fill fields",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-7",
+      "summary": "Offline-capable secure local data storage with autosave for events",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-8",
+      "summary": "Payments screen listing events with pending > 0, total pending amount, and month filter",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-9",
+      "summary": "Mobile-first UI/UX with dark sports theme and bottom navigation (Home, Calendar, Add Event, Payments)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-10",
+      "summary": "Implement single-user event data model and persistence in the Motoko backend, including create/read/update/delete operations for events and derived fields needed by the UI (pendingAmount, payment status, etc.).",
+      "reqIds": [
+        "REQ-1"
+      ],
+      "status": "pending"
+    }
+  ],
+  "gameProjectType": "none",
+  "projectName": "Push Sports Event Manager",
+  "clarification_mode": "instant",
+  "clarification_rounds": 0
+}

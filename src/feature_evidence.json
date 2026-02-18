@@ -1,0 +1,239 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-create-a-mobile-first-dark-sports-themed-ui-system-and-app-layout-including-a-persistent-bottom-navigation-bar-with-tabs-home-calendar-add-event-payments",
+      "featureTitle": "Create a mobile-first dark sports themed UI system and app layout, including a persistent bottom navigation bar with tabs: Home, Calendar, Add Event, Payments.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/components/layout/BottomNav.tsx",
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-build-the-dashboard-home-screen-to-display-total-events-this-month-upcoming-events-next-7-days-total-revenue-this-month-total-pending-payments-and-quick-actions-add-new-event-calendar-view",
+      "featureTitle": "Build the Dashboard (Home screen) to display: Total Events This Month, Upcoming Events (Next 7 Days), Total Revenue This Month, Total Pending Payments, and quick actions (+ Add New Event, Calendar View).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/HomeDashboard.tsx",
+        "frontend/src/utils/eventMetrics.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-the-add-new-event-form-with-all-specified-fields-validation-and-auto-calculation-of-pending-amount-total-event-amount-advance-paid-include-autosave-draft-behavior-to-prevent-losing-data-on-navigation-refresh",
+      "featureTitle": "Implement the Add New Event form with all specified fields, validation, and auto-calculation of Pending Amount (Total Event Amount - Advance Paid). Include autosave/draft behavior to prevent losing data on navigation/refresh.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/events/EventForm.tsx",
+        "frontend/src/pages/AddEventPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-4"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-event-details-screen-that-displays-all-event-information-including-payment-summary-and-requirements-checklist-and-provides-actions-edit-delete-mark-as-completed",
+      "featureTitle": "Implement Event Details screen that displays all event information including payment summary and requirements checklist, and provides actions: Edit, Delete, Mark as Completed.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/events/DeleteEventDialog.tsx",
+        "frontend/src/pages/EditEventPage.tsx",
+        "frontend/src/pages/EventDetailsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-5"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-create-a-monthly-calendar-view-that-supports-selecting-a-date-to-view-that-day-s-events-list-and-selecting-an-event-to-open-its-details-add-visual-highlighting-rules-upcoming-events-in-green-today-s-events-in-blue-and-events-with-overdue-payments-marked-with-a-red-indicator",
+      "featureTitle": "Create a Monthly Calendar view that supports selecting a date to view that day’s events list, and selecting an event to open its details. Add visual highlighting rules: upcoming events in green, today’s events in blue, and events with overdue payments marked with a red indicator.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/CalendarPage.tsx",
+        "frontend/src/utils/date.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-6"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-a-payments-screen-that-lists-all-events-with-pendingamount-0-displays-total-pending-amount-and-supports-filtering-by-month",
+      "featureTitle": "Implement a Payments screen that lists all events with pendingAmount > 0, displays total pending amount, and supports filtering by month.",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/pages/PaymentsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-7"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-an-offline-capable-storage-strategy-cache-events-locally-for-fast-load-and-offline-access-and-sync-changes-to-the-motoko-backend-when-connectivity-is-available-single-user",
+      "featureTitle": "Add an offline-capable storage strategy: cache events locally for fast load and offline access, and sync changes to the Motoko backend when connectivity is available (single-user).",
+      "files": [
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/components/status/SyncStatusBar.tsx",
+        "frontend/src/hooks/useConnectivity.ts"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-8"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-implement-an-in-browser-reminder-system-that-triggers-local-notifications-where-supported-for-1-day-before-an-event-the-morning-of-the-event-and-payment-reminders-when-pendingamount-0",
+      "featureTitle": "Implement an in-browser reminder system that triggers local notifications (where supported) for: 1 day before an event, the morning of the event, and payment reminders when pendingAmount > 0.",
+      "files": [
+        "frontend/src/components/layout/AppShell.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-9"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-voice-input-feature-on-the-add-event-screen-provide-a-microphone-button-that-uses-browser-speech-to-text-to-capture-a-spoken-booking-sentence-and-auto-fill-matching-form-fields-event-name-type-date-time-organizer-amounts-requirements-flags-location-when-stated",
+      "featureTitle": "Add a voice input feature on the Add Event screen: provide a microphone button that uses browser speech-to-text to capture a spoken booking sentence and auto-fill matching form fields (event name/type/date/time, organizer, amounts, requirements flags, location when stated).",
+      "files": [
+        "frontend/src/components/events/EventForm.tsx",
+        "frontend/src/components/events/VoiceInputButton.tsx",
+        "frontend/src/pages/AddEventPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-10"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-add-a-simple-single-user-access-approach-suitable-for-personal-internal-use-no-multi-user-sharing",
+      "featureTitle": "Add a simple single-user access approach suitable for personal internal use (no multi-user sharing).",
+      "files": [
+        "frontend/src/App.tsx",
+        "frontend/src/components/auth/AccessDeniedScreen.tsx",
+        "frontend/src/components/auth/LoginButton.tsx",
+        "frontend/src/components/auth/ProfileSetupModal.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-11"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-generate-and-include-basic-static-visual-assets-for-the-app-icon-and-a-subtle-sports-themed-background-empty-state-and-render-them-from-frontend-static-assets",
+      "featureTitle": "Generate and include basic static visual assets for the app (icon and a subtle sports-themed background/empty state) and render them from frontend static assets.",
+      "files": [
+        "frontend/src/components/branding/AppBranding.tsx",
+        "frontend/src/components/empty/EmptyState.tsx",
+        "frontend/src/components/layout/AppShell.tsx",
+        "frontend/src/pages/CalendarPage.tsx",
+        "frontend/src/pages/HomeDashboard.tsx",
+        "frontend/src/pages/PaymentsPage.tsx"
+      ],
+      "components": [
+        "authorization@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-12"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
