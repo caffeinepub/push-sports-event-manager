@@ -1,414 +1,141 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Push Sports Event Manager — Frontend implementation plan",
+  "title": "Push Sports Event Manager: Event Details refresh + hide location + multi-sport + date range",
   "requirements": [
     {
-      "id": "REQ-2",
-      "summary": "Create mobile-first dark sports themed UI system with persistent bottom navigation (Home, Calendar, Add Event, Payments).",
+      "id": "REQ-16",
+      "summary": "Ensure Event Details always shows the latest just-saved event data after Voice Input save/edit without manual refresh.",
       "acceptanceCriteria": [
-        "App is optimized for small screens first (comfortable touch targets, vertical layouts).",
-        "Consistent dark sports theme applied across screens (backgrounds, typography, cards, buttons).",
-        "Bottom navigation is always accessible and highlights the active tab.",
-        "All user-facing text is in English."
+        "After using Voice Input to populate fields and saving the event, opening the Event Details page shows the saved values (event name/type, date/time, organizer, payments, requirements, notes).",
+        "After editing an event (including changes coming from Voice Input) and saving, returning to Event Details shows updated values immediately.",
+        "No manual browser refresh is required for Event Details to show the newest saved data."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/index.css",
-          "operation": "create",
-          "description": "Create global Tailwind base + app theme tokens for a consistent dark sports theme (background, surface/cards, primary/accents, typography, focus states) and mobile-first defaults."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "create",
-          "description": "Create the root app shell with persistent bottom navigation tabs (Home, Calendar, Add Event, Payments), active-tab highlighting, and a mobile-first layout wrapper."
-        },
-        {
-          "path": "frontend/src/components/layout/BottomNav.tsx",
-          "operation": "create",
-          "description": "Implement a persistent bottom navigation component used by App shell for the required tabs and active state styling; compose shadcn-ui primitives where helpful. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "create",
-          "description": "Add a shared layout component providing consistent page padding, top area for status badges, and space for BottomNav; compose shadcn-ui primitives where helpful. Verify the component's usage instructions before implementing."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Build the Dashboard (Home) with metrics, upcoming events list, and quick actions navigating to Add Event and Calendar.",
-      "acceptanceCriteria": [
-        "Dashboard shows four summary metrics computed from stored events.",
-        "Upcoming events list shows events occurring within the next 7 days ordered by date/time.",
-        "Quick buttons navigate to Add Event and Calendar screens.",
-        "Metrics update after creating/editing/deleting events without requiring a full page reload."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/HomeDashboard.tsx",
-          "operation": "create",
-          "description": "Create the Home dashboard UI showing four computed metrics and an Upcoming Events (next 7 days) list; include quick actions for Add Event and Calendar; compose shadcn-ui components for cards/buttons/list. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/hooks/useQueries.ts",
           "operation": "modify",
-          "description": "Wire HomeDashboard into the Home tab and ensure navigation from quick actions to Add Event and Calendar views."
+          "description": "Adjust the get-event query behavior to avoid stale Event Details data (e.g., set refetchOnMount/refetchOnWindowFocus appropriately and ensure staleTime does not prevent fetching newly-saved values). Also ensure add/update mutations invalidate/refetch the specific event query key used by Event Details."
         },
         {
-          "path": "frontend/src/hooks/useEvents.ts",
-          "operation": "create",
-          "description": "Add React Query hooks to fetch/cached events and expose derived selectors for dashboard metrics and upcoming events; integrate with offline cache layer."
+          "path": "frontend/src/pages/EventDetailsPage.tsx",
+          "operation": "modify",
+          "description": "Ensure Event Details triggers a fresh read when navigated to after save/edit (e.g., call refetch on mount or rely on updated query options) so the view reflects the latest saved values immediately."
         },
-        {
-          "path": "frontend/src/utils/eventMetrics.ts",
-          "operation": "create",
-          "description": "Implement pure utilities to compute: total events this month, upcoming events next 7 days, total revenue this month, and total pending payments from the event list (shared across Home/Calendar/Payments)."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Implement Add New Event form with all fields, validation, pending amount auto-calc, and autosave draft restore/discard.",
-      "acceptanceCriteria": [
-        "All listed fields are present with appropriate input types (date picker, time picker, numeric inputs, long text, dropdown, checkboxes).",
-        "Pending Amount is read-only and updates instantly when Total or Advance changes.",
-        "Form prevents saving when required fields are missing (show inline errors).",
-        "Autosave stores an in-progress draft locally and restores it when returning to the Add Event screen (with a clear way to discard draft).",
-        "On successful save, the new event appears in Calendar/Home/Payments as applicable."
-      ],
-      "file_operations": [
         {
           "path": "frontend/src/pages/AddEventPage.tsx",
-          "operation": "create",
-          "description": "Create the Add Event screen with required fields, inline validation, read-only pending amount auto-calculation, and Save action; include a clear Draft restored banner and Discard draft control; compose shadcn-ui form components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/events/EventForm.tsx",
-          "operation": "create",
-          "description": "Create a reusable EventForm component (used for Add and Edit) that owns inputs, validation display, pending amount calculation, and exposes submit/cancel handlers; compose shadcn-ui inputs/select/checkbox/textarea. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useEventDraft.ts",
-          "operation": "create",
-          "description": "Implement local draft persistence (localStorage) with debounce autosave, restore-on-mount, and explicit discard; scoped to the Add Event screen."
-        },
-        {
-          "path": "frontend/src/utils/eventValidation.ts",
-          "operation": "create",
-          "description": "Add validation helpers for required fields and numeric constraints (e.g., advance <= total; pending never negative) used by EventForm."
-        },
-        {
-          "path": "frontend/src/App.tsx",
           "operation": "modify",
-          "description": "Wire AddEventPage into the Add Event tab and ensure successful save triggers refresh of event lists/metrics (React Query invalidation) without full reload."
+          "description": "After creating an event, navigate in a way that results in Event Details reading fresh data (e.g., navigate to the Event Details route for the returned id and ensure relevant queries are invalidated/refetched rather than relying on potentially stale cached data)."
+        },
+        {
+          "path": "frontend/src/pages/EditEventPage.tsx",
+          "operation": "modify",
+          "description": "After updating an event, ensure navigation back to Event Details is paired with query invalidation/refetch so the user immediately sees the updated saved values."
         }
       ]
     },
     {
-      "id": "REQ-5",
-      "summary": "Implement Event Details screen showing all fields + payment summary + requirements checklist with actions Edit, Delete, Mark as Completed.",
+      "id": "REQ-17",
+      "summary": "Hide the location section on Event Details while leaving stored location data and Add/Edit forms unchanged.",
       "acceptanceCriteria": [
-        "Details page shows all stored fields in a readable mobile layout.",
-        "Payment summary includes totalAmount, advancePaid, pendingAmount and a clear paid/unpaid indicator.",
-        "Edit navigates to an edit form populated with the existing event data.",
-        "Delete requires confirmation and removes the event from all lists and calendar indicators.",
-        "Mark as Completed updates status and is reflected everywhere (dashboard metrics, calendar highlighting, payments list)."
+        "Event Details page no longer renders the Location label/value or the location icon/section.",
+        "All other Event Details sections (date/time, organizer, payment summary, requirements, notes, actions) continue to work."
       ],
       "file_operations": [
         {
           "path": "frontend/src/pages/EventDetailsPage.tsx",
-          "operation": "create",
-          "description": "Create the Event Details view showing all event fields, payment summary, and requirements checklist; provide Edit/Delete/Mark Completed actions; compose shadcn-ui components (cards, badges, dialogs). Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/EditEventPage.tsx",
-          "operation": "create",
-          "description": "Create an Edit Event view that reuses EventForm with existing event data prefilled and saves updates through the events hooks; compose shadcn-ui components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/events/DeleteEventDialog.tsx",
-          "operation": "create",
-          "description": "Add a confirmation dialog component for deleting an event and triggering mutation + cache updates; compose shadcn-ui dialog components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useEvents.ts",
           "operation": "modify",
-          "description": "Add mutations for update/delete/mark-completed and ensure React Query cache invalidation/reconciliation updates all dependent screens."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire navigation to EventDetailsPage from lists (Home upcoming, Calendar day list, Payments list) and wire EditEventPage from Details; ensure views are reachable and not orphaned."
+          "description": "Remove the Location UI block (including MapPin icon and label/value rendering) from Event Details while keeping all other sections intact."
         }
       ]
     },
     {
-      "id": "REQ-6",
-      "summary": "Create monthly calendar view with date selection, daily events list, event detail navigation, and status-based highlights (green upcoming, blue today, red overdue payments).",
+      "id": "REQ-18",
+      "summary": "Allow selecting multiple sports in Add/Edit Event and display all selected sports on Event Details, with sensible handling of older single-sport events.",
       "acceptanceCriteria": [
-        "Calendar shows a month grid with the ability to move between months.",
-        "Selecting a date shows a list of events for that date.",
-        "Selecting an event navigates to the Event Details page.",
-        "Today’s date and today’s events are visually distinguished in blue.",
-        "Upcoming events (future-dated) are visually distinguished in green.",
-        "Events with pendingAmount > 0 and event date in the past show a red overdue-payment indicator in the calendar and in the date event list."
+        "Add Event form allows selecting more than one sport for an event.",
+        "Edit Event form loads and allows modifying the previously selected multiple sports.",
+        "Event Details shows all selected sports (not just one).",
+        "Existing events that only have a single sport/event type continue to display sensibly (e.g., treated as a single selected sport)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/CalendarPage.tsx",
-          "operation": "create",
-          "description": "Create the Monthly Calendar view with month navigation, selectable dates, and a selected-day event list; implement highlight rules (today=blue, future=green, overdue payment indicator=red) and navigation to Event Details; compose shadcn-ui components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/calendar/MonthGrid.tsx",
-          "operation": "create",
-          "description": "Implement a reusable month grid component that renders day cells with compact event indicators and selection state; compose shadcn-ui primitives as needed. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/utils/date.ts",
-          "operation": "create",
-          "description": "Add date utilities for month boundaries, day comparisons, and formatting suitable for calendar calculations and consistent display."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/utils/eventAdapter.ts",
           "operation": "modify",
-          "description": "Wire CalendarPage into the Calendar tab and ensure event selection routes to EventDetailsPage."
-        }
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "summary": "Implement Payments screen listing events with pendingAmount > 0, total pending, and month filtering with navigation to details.",
-      "acceptanceCriteria": [
-        "Payments screen only shows events where pendingAmount > 0.",
-        "Total pending amount is displayed and matches the sum of listed items under the active filter.",
-        "User can filter by month and the list + total update accordingly.",
-        "Tapping an event navigates to the Event Details page."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/pages/PaymentsPage.tsx",
-          "operation": "create",
-          "description": "Create the Payments screen with month filter UI, list of pending events only, and total pending amount; tapping an item navigates to Event Details; compose shadcn-ui components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useEvents.ts",
-          "operation": "modify",
-          "description": "Expose derived selectors/helpers to filter events by month and pendingAmount > 0, and compute total pending under active filter."
-        },
-        {
-          "path": "frontend/src/App.tsx",
-          "operation": "modify",
-          "description": "Wire PaymentsPage into the Payments tab and ensure list items navigate to EventDetailsPage."
-        }
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "summary": "Add offline-capable local caching + queued change sync with clear offline/pending-sync indicators (single-user).",
-      "acceptanceCriteria": [
-        "App loads previously fetched events from local storage when offline.",
-        "User can create/edit/delete events while offline; changes are queued locally.",
-        "When connectivity is restored, queued changes sync to the backend and UI reconciles without data loss.",
-        "User has a clear indication when the app is offline and/or when changes are pending sync."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/offline/offlineStore.ts",
-          "operation": "create",
-          "description": "Implement local persistence for events cache and an operation queue (create/update/delete) using localStorage (or IndexedDB if already available in template) with versioned keys and safe serialization."
-        },
-        {
-          "path": "frontend/src/hooks/useConnectivity.ts",
-          "operation": "create",
-          "description": "Add a hook that tracks online/offline state (navigator.onLine + events) and exposes connectivity status for UI badges and sync triggering."
-        },
-        {
-          "path": "frontend/src/offline/syncEngine.ts",
-          "operation": "create",
-          "description": "Implement a sync orchestrator that flushes queued operations when online, reconciles results into the local cache, and prevents duplicate replays (idempotency tokens on the client side)."
-        },
-        {
-          "path": "frontend/src/hooks/useEvents.ts",
-          "operation": "modify",
-          "description": "Integrate offlineStore + syncEngine: serve cached events immediately, enqueue mutations when offline, and auto-sync/refresh when connectivity returns; ensure React Query cache stays consistent."
-        },
-        {
-          "path": "frontend/src/components/status/SyncStatusBar.tsx",
-          "operation": "create",
-          "description": "Add a small status component (offline badge / pending changes count / syncing state) to be shown in AppShell; compose shadcn-ui badges/alerts. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Render SyncStatusBar prominently (but compact) so users can always see offline/pending-sync state."
-        }
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "summary": "Implement in-browser reminder system using Notification API with permissions flow and in-app fallback reminders panel/badge.",
-      "acceptanceCriteria": [
-        "App requests notification permission with a clear explanation and allows continuing without enabling notifications.",
-        "When notifications are permitted, the app schedules/checks reminders locally and triggers notifications at the correct times while the app is active (and where the browser permits background notifications).",
-        "If pendingAmount > 0, the app shows a payment reminder notification according to a defined rule (e.g., on event morning and/or after event date passes) and does not spam duplicates.",
-        "If notifications are not permitted/available, the app shows an in-app reminders panel/badge as a fallback."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/reminders/reminderEngine.ts",
-          "operation": "create",
-          "description": "Implement a local reminder checker that, while the app is running, evaluates upcoming events and payment reminder rules (1 day before, event morning, overdue/pending payments) and triggers Notification API when permitted; store last-fired keys in localStorage to avoid duplicates."
-        },
-        {
-          "path": "frontend/src/hooks/useReminders.ts",
-          "operation": "create",
-          "description": "Add a hook to manage permission state, start/stop the reminder engine, and provide fallback reminder items for in-app display when notifications are unavailable/denied."
-        },
-        {
-          "path": "frontend/src/components/reminders/RemindersPanel.tsx",
-          "operation": "create",
-          "description": "Create an in-app reminders panel (fallback) that lists due reminders and can be opened from a small badge/icon; compose shadcn-ui dialog/sheet components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
-          "operation": "modify",
-          "description": "Wire reminders UI entrypoint (badge/button) into the global shell and ensure the reminder engine starts after authentication and events are available."
-        }
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "summary": "Add voice input on Add Event screen using browser speech-to-text to parse a booking sentence and autofill form fields, with graceful degradation.",
-      "acceptanceCriteria": [
-        "Microphone button starts/stops speech recognition and shows listening state.",
-        "Recognized text is displayed for review.",
-        "App parses common phrases to populate fields (at minimum: eventType from sport words, date, start/end time, organizer name when stated, advance paid, and requirements checkboxes like cafeteria/camera).",
-        "User can edit any auto-filled fields before saving.",
-        "If speech recognition is not supported, feature degrades gracefully with a helpful message."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/voice/speechToText.ts",
-          "operation": "create",
-          "description": "Implement a small wrapper around the Web Speech API (SpeechRecognition) to start/stop listening, stream/finalize transcripts, and expose supported/unsupported state."
-        },
-        {
-          "path": "frontend/src/voice/bookingParser.ts",
-          "operation": "create",
-          "description": "Implement lightweight NLP parsing (rules/regex) for common booking phrases to extract sport/eventType keywords, date, start/end time, organizer name, advance amount, and requirements flags (e.g., cafeteria/camera)."
-        },
-        {
-          "path": "frontend/src/components/events/VoiceInputButton.tsx",
-          "operation": "create",
-          "description": "Create a microphone control component showing listening state, displaying recognized text for review, and applying parsed values into the EventForm; compose shadcn-ui button/badge components. Verify the component's usage instructions before implementing."
+          "description": "Extend the form model and adapter to support sports as an array (mapping backend Event.sports <-> form data). Include backward-compatible mapping for older/single-sport representations (e.g., derive a single sport from existing metadata eventType when sports is missing/empty)."
         },
         {
           "path": "frontend/src/components/events/EventForm.tsx",
           "operation": "modify",
-          "description": "Integrate VoiceInputButton into the Add Event experience (and optionally Edit) so recognized text can propose field updates without blocking manual editing."
+          "description": "Replace the single event type selector with a multi-select sports UI (e.g., checkbox group and/or add-custom-sport input) that updates form data as an array of selected sports; keep labels in English."
         },
         {
-          "path": "frontend/src/pages/AddEventPage.tsx",
+          "path": "frontend/src/pages/EventDetailsPage.tsx",
           "operation": "modify",
-          "description": "Wire voice input UI into the Add Event page and ensure unsupported browsers show an English helpful message."
+          "description": "Update the details header/summary to render all selected sports (e.g., multiple badges) instead of a single event type field."
+        },
+        {
+          "path": "frontend/src/utils/bookingParser.ts",
+          "operation": "modify",
+          "description": "Update Voice Input parsing to support extracting multiple sports from recognized text (e.g., detect multiple sport keywords and return them as an array), while remaining compatible with single sport mentions."
         }
       ]
     },
     {
-      "id": "REQ-11",
-      "summary": "Enforce simple single-user access via Internet Identity and access-denied UI; clear cached data on logout.",
+      "id": "REQ-19",
+      "summary": "Use a From–To date range for Add/Edit Event and show the range on Event Details, keeping calendar logic working using range start date for existing sorting/filtering.",
       "acceptanceCriteria": [
-        "App prevents accidental multi-user use by scoping all data to a single identity/session model (e.g., a single authenticated principal or a single configured owner).",
-        "If authentication is used, it relies only on Internet Identity (no third-party auth).",
-        "If the user is not the designated user/owner, the app shows an access denied state and does not expose event data."
+        "Add Event form captures an event date range with a start (From) date and an end (To) date.",
+        "Edit Event form loads an existing event’s date range and allows editing it.",
+        "Event Details displays the date range in a clear From–To format.",
+        "Existing events without an end date continue to work (e.g., end date defaults to start date or displays as a single-day range).",
+        "Calendar sorting/highlighting and month filtering continue to function (at minimum using the range start date as the event’s primary date for existing logic)."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/components/auth/LoginButton.tsx",
-          "operation": "create",
-          "description": "Create a Login/Logout button using the existing useInternetIdentity hook and clear React Query cache on logout per the authorization component guidance. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/hooks/useAuthz.ts",
-          "operation": "create",
-          "description": "Add React Query hooks to fetch caller role/profile and a small helper to determine whether to show app content vs access denied; handle authorization failures gracefully in UI."
-        },
-        {
-          "path": "frontend/src/components/auth/ProfileSetupModal.tsx",
-          "operation": "create",
-          "description": "Add a first-login profile setup modal that asks for the user's name (English UI) and saves it via backend; avoid modal flash by following the authorization component guidance; compose shadcn-ui dialog + inputs. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/auth/AccessDeniedScreen.tsx",
-          "operation": "create",
-          "description": "Create an access denied screen that does not show event data and provides a logout option; compose shadcn-ui components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/App.tsx",
+          "path": "frontend/src/utils/eventAdapter.ts",
           "operation": "modify",
-          "description": "Gate all event data screens behind authentication and authorization checks (require login before loading any event data); show ProfileSetupModal for first-time users; show AccessDeniedScreen when unauthorized; include LoginButton in the shell."
+          "description": "Update the form model and adapter to store a date range (From/To) and map to/from backend Event.dateRange. Add safe defaults so missing end dates behave as single-day ranges. Provide a consistent 'primary date' (range start) used by existing calendar/filtering logic."
         },
         {
-          "path": "frontend/src/hooks/useEvents.ts",
+          "path": "frontend/src/components/events/EventForm.tsx",
           "operation": "modify",
-          "description": "Ensure events queries are disabled until authenticated/authorized; ensure cached events and offline queues are cleared on logout to prevent data leakage across sessions."
-        }
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "summary": "Include generated static visual assets (app icon, subtle sports background, empty state illustration) and render them from frontend static assets.",
-      "acceptanceCriteria": [
-        "Generated images are placed under frontend/public/assets/generated and used in the UI (e.g., app icon/branding and at least one empty state).",
-        "Assets do not require backend routing and load correctly in production build."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/assets/generated/app-icon.dim_512x512.png",
-          "operation": "create",
-          "description": "Add the generated app icon asset at frontend/public/assets/generated/app-icon.dim_512x512.png and ensure it is referenced by the UI where appropriate (e.g., auth screen/header branding)."
+          "description": "Change the single Event Date input into two date inputs labeled in English (\"From\" and \"To\") and bind them to the form date range state; ensure validation and submission uses the range."
         },
         {
-          "path": "frontend/public/assets/generated/sports-bg.dim_1080x1920.png",
-          "operation": "create",
-          "description": "Add the generated subtle sports background asset at frontend/public/assets/generated/sports-bg.dim_1080x1920.png and use it in the app shell as a subtle background layer."
-        },
-        {
-          "path": "frontend/public/assets/generated/empty-events.dim_1200x800.png",
-          "operation": "create",
-          "description": "Add the generated empty state illustration at frontend/public/assets/generated/empty-events.dim_1200x800.png and show it in appropriate empty states (e.g., no upcoming events / no events on selected date / no pending payments)."
-        },
-        {
-          "path": "frontend/src/components/branding/AppBranding.tsx",
-          "operation": "create",
-          "description": "Create a small branding component that renders the app icon (frontend/public/assets/generated/app-icon.dim_512x512.png) and optionally a title; compose shadcn-ui typography as needed. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/empty/EmptyState.tsx",
-          "operation": "create",
-          "description": "Create a reusable empty state component that can render frontend/public/assets/generated/empty-events.dim_1200x800.png with English text and optional action button; compose shadcn-ui components. Verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/components/layout/AppShell.tsx",
+          "path": "frontend/src/pages/EventDetailsPage.tsx",
           "operation": "modify",
-          "description": "Apply the subtle background using frontend/public/assets/generated/sports-bg.dim_1080x1920.png in a way that preserves readability and performance on mobile."
+          "description": "Update Date & Time display to show the From–To date range clearly; if end equals start (or absent), display as a single-day range or equivalent clear format."
         },
         {
-          "path": "frontend/src/pages/HomeDashboard.tsx",
+          "path": "frontend/src/utils/eventMetrics.ts",
           "operation": "modify",
-          "description": "Use EmptyState (with frontend/public/assets/generated/empty-events.dim_1200x800.png) when there are no upcoming events."
+          "description": "Update calendar sorting/highlighting/month filtering helpers to use the event range start date as the primary date (rather than a single event date field), preserving existing behaviors as closely as possible."
         },
         {
           "path": "frontend/src/pages/CalendarPage.tsx",
           "operation": "modify",
-          "description": "Use EmptyState (with frontend/public/assets/generated/empty-events.dim_1200x800.png) when the selected date has no events."
+          "description": "Update Calendar page event rendering to use the new date range-aware enriched form data (e.g., remove reliance on a single stored date field and ensure date selection shows events whose primary date matches the selected day)."
         },
         {
-          "path": "frontend/src/pages/PaymentsPage.tsx",
+          "path": "frontend/src/utils/bookingParser.ts",
           "operation": "modify",
-          "description": "Use EmptyState (with frontend/public/assets/generated/empty-events.dim_1200x800.png) when there are no pending payments for the selected month."
+          "description": "Update Voice Input parsing to recognize and populate date ranges when users speak a from-to date (while still supporting single-date utterances by setting To = From)."
+        },
+        {
+          "path": "frontend/src/hooks/useQueries.ts",
+          "operation": "modify",
+          "description": "Align add/update event mutations to send/receive the backend's dateRange structure (and ensure queries return date-range-aware event data for downstream calendar/month filtering)."
+        },
+        {
+          "path": "frontend/src/pages/AddEventPage.tsx",
+          "operation": "modify",
+          "description": "Update initial form defaults and draft restore logic to store/restore the From/To date range (ensuring stored drafts from older single-date format still load sensibly)."
+        },
+        {
+          "path": "frontend/src/pages/EditEventPage.tsx",
+          "operation": "modify",
+          "description": "Ensure the edit form loads an event’s date range into the From/To inputs using the updated adapter, and that saving preserves the range."
         }
       ]
     }

@@ -1,33 +1,58 @@
 import type { EventFormData } from './eventAdapter';
-import { parse, format } from 'date-fns';
+import { parse } from 'date-fns';
 
 export function parseBookingText(text: string): Partial<EventFormData> {
   const result: Partial<EventFormData> = {};
   const lowerText = text.toLowerCase();
 
-  // Parse event type
-  if (lowerText.includes('cricket')) result.eventType = 'Cricket';
-  else if (lowerText.includes('badminton')) result.eventType = 'Badminton';
-  else if (lowerText.includes('football')) result.eventType = 'Football';
-  else if (lowerText.includes('volleyball')) result.eventType = 'Volleyball';
-
-  // Parse date (simple patterns)
-  const datePatterns = [
-    /(?:on|date)\s+(\w+\s+\d{1,2})/i,
-    /(\d{1,2})\s+(\w+)/i,
-  ];
+  // Parse multiple sports
+  const sports: string[] = [];
+  if (lowerText.includes('cricket')) sports.push('Cricket');
+  if (lowerText.includes('badminton')) sports.push('Badminton');
+  if (lowerText.includes('football')) sports.push('Football');
+  if (lowerText.includes('volleyball')) sports.push('Volleyball');
+  if (lowerText.includes('basketball')) sports.push('Basketball');
+  if (lowerText.includes('tennis')) sports.push('Tennis');
   
-  for (const pattern of datePatterns) {
-    const match = text.match(pattern);
-    if (match) {
-      try {
-        const dateStr = match[1] + (match[2] ? ' ' + match[2] : '');
-        const parsed = parse(dateStr, 'MMMM d', new Date());
-        if (!isNaN(parsed.getTime())) {
-          result.eventDate = parsed;
-          break;
-        }
-      } catch {}
+  if (sports.length > 0) {
+    result.sports = sports;
+  }
+
+  // Parse date range (from-to pattern)
+  const dateRangePattern = /(?:from|starting)\s+(\w+\s+\d{1,2})(?:\s+to|\s+until|\s+-)\s+(\w+\s+\d{1,2})/i;
+  const rangeMatch = text.match(dateRangePattern);
+  
+  if (rangeMatch) {
+    try {
+      const fromStr = rangeMatch[1];
+      const toStr = rangeMatch[2];
+      const fromDate = parse(fromStr, 'MMMM d', new Date());
+      const toDate = parse(toStr, 'MMMM d', new Date());
+      if (!isNaN(fromDate.getTime()) && !isNaN(toDate.getTime())) {
+        result.eventDateFrom = fromDate;
+        result.eventDateTo = toDate;
+      }
+    } catch {}
+  } else {
+    // Parse single date
+    const datePatterns = [
+      /(?:on|date)\s+(\w+\s+\d{1,2})/i,
+      /(\d{1,2})\s+(\w+)/i,
+    ];
+    
+    for (const pattern of datePatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        try {
+          const dateStr = match[1] + (match[2] ? ' ' + match[2] : '');
+          const parsed = parse(dateStr, 'MMMM d', new Date());
+          if (!isNaN(parsed.getTime())) {
+            result.eventDateFrom = parsed;
+            result.eventDateTo = parsed;
+            break;
+          }
+        } catch {}
+      }
     }
   }
 

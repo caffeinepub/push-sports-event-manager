@@ -6,7 +6,7 @@ import { formatDate, formatTime } from '../utils/date';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Calendar, TrendingUp, DollarSign, Clock } from 'lucide-react';
+import { Plus, Calendar, TrendingUp, DollarSign, Clock, Download } from 'lucide-react';
 import EmptyState from '../components/empty/EmptyState';
 
 export default function HomeDashboard() {
@@ -99,16 +99,25 @@ export default function HomeDashboard() {
         </Card>
       </div>
 
-      <div className="flex gap-3">
-        <Button onClick={() => navigate({ to: '/add-event' })} className="flex-1 gap-2">
+      <div className="grid grid-cols-2 gap-3">
+        <Button onClick={() => navigate({ to: '/add-event' })} className="gap-2">
           <Plus className="h-4 w-4" />
-          Add New Event
+          Add Event
         </Button>
-        <Button onClick={() => navigate({ to: '/calendar' })} variant="outline" className="flex-1 gap-2">
+        <Button onClick={() => navigate({ to: '/calendar' })} variant="outline" className="gap-2">
           <Calendar className="h-4 w-4" />
-          Calendar View
+          Calendar
         </Button>
       </div>
+
+      <Button 
+        onClick={() => navigate({ to: '/import' })} 
+        variant="secondary" 
+        className="w-full gap-2"
+      >
+        <Download className="h-4 w-4" />
+        Import from Google Sheets
+      </Button>
 
       <Card>
         <CardHeader>
@@ -136,14 +145,21 @@ export default function HomeDashboard() {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold truncate">{event.formData.eventName}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(event.formData.eventDate)} at {event.formData.startTime}
+                        {formatDate(event.formData.eventDateFrom)} at {event.formData.startTime}
                       </p>
                       <p className="text-sm text-muted-foreground">{event.formData.location}</p>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      <Badge variant={event.pendingAmount > 0 ? 'destructive' : 'secondary'}>
-                        {event.formData.eventType}
-                      </Badge>
+                      <div className="flex flex-wrap gap-1 justify-end">
+                        {event.formData.sports.slice(0, 2).map(sport => (
+                          <Badge key={sport} variant={event.pendingAmount > 0 ? 'destructive' : 'secondary'}>
+                            {sport}
+                          </Badge>
+                        ))}
+                        {event.formData.sports.length > 2 && (
+                          <Badge variant="outline">+{event.formData.sports.length - 2}</Badge>
+                        )}
+                      </div>
                       {event.pendingAmount > 0 && (
                         <span className="text-xs text-destructive font-medium">₹{event.pendingAmount} pending</span>
                       )}

@@ -1,4 +1,5 @@
 import type { EnrichedEvent } from './eventAdapter';
+import { getPrimaryDate } from './eventAdapter';
 import { startOfMonth, endOfMonth, addDays, isWithinInterval, isSameDay, isPast } from 'date-fns';
 
 export function getTotalEventsThisMonth(events: EnrichedEvent[]): number {
@@ -7,7 +8,7 @@ export function getTotalEventsThisMonth(events: EnrichedEvent[]): number {
   const end = endOfMonth(now);
   
   return events.filter(event => {
-    const eventDate = new Date(Number(event.dateTimestamp) / 1_000_000);
+    const eventDate = getPrimaryDate(event);
     return isWithinInterval(eventDate, { start, end });
   }).length;
 }
@@ -18,11 +19,11 @@ export function getUpcomingEvents(events: EnrichedEvent[], days: number = 7): En
   
   return events
     .filter(event => {
-      const eventDate = new Date(Number(event.dateTimestamp) / 1_000_000);
+      const eventDate = getPrimaryDate(event);
       return isWithinInterval(eventDate, { start: now, end }) && 
              event.formData.status !== 'Cancelled';
     })
-    .sort((a, b) => Number(a.dateTimestamp - b.dateTimestamp));
+    .sort((a, b) => Number(a.dateRange.from - b.dateRange.from));
 }
 
 export function getTotalRevenueThisMonth(events: EnrichedEvent[]): number {
@@ -32,7 +33,7 @@ export function getTotalRevenueThisMonth(events: EnrichedEvent[]): number {
   
   return events
     .filter(event => {
-      const eventDate = new Date(Number(event.dateTimestamp) / 1_000_000);
+      const eventDate = getPrimaryDate(event);
       return isWithinInterval(eventDate, { start, end }) && 
              event.formData.status === 'Completed';
     })
@@ -48,14 +49,14 @@ export function getTotalPendingPayments(events: EnrichedEvent[]): number {
 export function getEventsForDate(events: EnrichedEvent[], date: Date): EnrichedEvent[] {
   return events
     .filter(event => {
-      const eventDate = new Date(Number(event.dateTimestamp) / 1_000_000);
+      const eventDate = getPrimaryDate(event);
       return isSameDay(eventDate, date);
     })
-    .sort((a, b) => Number(a.dateTimestamp - b.dateTimestamp));
+    .sort((a, b) => Number(a.dateRange.from - b.dateRange.from));
 }
 
 export function hasOverduePayment(event: EnrichedEvent): boolean {
-  const eventDate = new Date(Number(event.dateTimestamp) / 1_000_000);
+  const eventDate = getPrimaryDate(event);
   return event.pendingAmount > 0 && isPast(eventDate) && event.formData.status !== 'Cancelled';
 }
 
@@ -70,7 +71,7 @@ export function filterEventsByMonth(events: EnrichedEvent[], month: Date): Enric
   const end = endOfMonth(month);
   
   return events.filter(event => {
-    const eventDate = new Date(Number(event.dateTimestamp) / 1_000_000);
+    const eventDate = getPrimaryDate(event);
     return isWithinInterval(eventDate, { start, end });
   });
 }

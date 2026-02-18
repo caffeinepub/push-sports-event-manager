@@ -10,19 +10,32 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface DateRange { 'to' : Time, 'from' : Time }
 export interface Event {
   'id' : EventId,
   'title' : string,
+  'externalId' : [] | [string],
   'createdAt' : Time,
   'pricePerPerson' : bigint,
   'amountPaid' : bigint,
   'lastModified' : Time,
   'attendees' : bigint,
-  'dateTimestamp' : Time,
+  'sports' : Array<string>,
+  'dateRange' : DateRange,
   'services' : Array<Service>,
   'flatFee' : [] | [bigint],
 }
 export type EventId = bigint;
+export interface EventInput {
+  'title' : string,
+  'pricePerPerson' : bigint,
+  'amountPaid' : bigint,
+  'attendees' : bigint,
+  'sports' : Array<string>,
+  'dateRange' : DateRange,
+  'services' : Array<Service>,
+  'flatFee' : [] | [bigint],
+}
 export interface Service { 'name' : string, 'price' : bigint }
 export type Time = bigint;
 export interface UserProfile { 'name' : string }
@@ -31,33 +44,19 @@ export type UserRole = { 'admin' : null } |
   { 'guest' : null };
 export interface _SERVICE {
   '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
-  'addEvent' : ActorMethod<
-    [string, Time, Array<Service>, bigint, bigint, [] | [bigint], bigint],
-    EventId
-  >,
+  'addEvent' : ActorMethod<[EventInput], EventId>,
   'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
   'deleteEvent' : ActorMethod<[EventId], undefined>,
   'getAllEvents' : ActorMethod<[], Array<Event>>,
   'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
   'getCallerUserRole' : ActorMethod<[], UserRole>,
   'getEvent' : ActorMethod<[EventId], Event>,
-  'getEventsByDateRange' : ActorMethod<[Time, Time], Array<Event>>,
+  'getEventsByDateRange' : ActorMethod<[DateRange], Array<Event>>,
   'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
   'isCallerAdmin' : ActorMethod<[], boolean>,
   'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
-  'updateEvent' : ActorMethod<
-    [
-      EventId,
-      string,
-      Time,
-      Array<Service>,
-      bigint,
-      bigint,
-      [] | [bigint],
-      bigint,
-    ],
-    undefined
-  >,
+  'updateEvent' : ActorMethod<[EventId, EventInput], undefined>,
+  'upsertManyEvents' : ActorMethod<[Array<Event>], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

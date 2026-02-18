@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
+import { X } from 'lucide-react';
 import VoiceInputButton from './VoiceInputButton';
 
 interface EventFormProps {
@@ -16,9 +18,12 @@ interface EventFormProps {
   isSubmitting: boolean;
 }
 
+const SPORT_OPTIONS = ['Cricket', 'Badminton', 'Football', 'Volleyball', 'Basketball', 'Tennis'];
+
 export default function EventForm({ initialData, onSubmit, onCancel, isSubmitting }: EventFormProps) {
   const [formData, setFormData] = useState<EventFormData>(initialData);
   const [errors, setErrors] = useState<Partial<Record<keyof EventFormData, string>>>({});
+  const [customSport, setCustomSport] = useState('');
 
   const pendingAmount = Math.max(0, formData.totalAmount - formData.advancePaid);
 
@@ -32,6 +37,8 @@ export default function EventForm({ initialData, onSubmit, onCancel, isSubmittin
     if (formData.totalAmount < 0) newErrors.totalAmount = 'Total amount must be positive';
     if (formData.advancePaid < 0) newErrors.advancePaid = 'Advance paid must be positive';
     if (formData.advancePaid > formData.totalAmount) newErrors.advancePaid = 'Advance cannot exceed total';
+    if (formData.sports.length === 0) newErrors.sports = 'Select at least one sport';
+    if (formData.eventDateTo < formData.eventDateFrom) newErrors.eventDateTo = 'End date cannot be before start date';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -46,6 +53,33 @@ export default function EventForm({ initialData, onSubmit, onCancel, isSubmittin
 
   const handleVoiceInput = (parsedData: Partial<EventFormData>) => {
     setFormData(prev => ({ ...prev, ...parsedData }));
+  };
+
+  const toggleSport = (sport: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sports: prev.sports.includes(sport)
+        ? prev.sports.filter(s => s !== sport)
+        : [...prev.sports, sport],
+    }));
+  };
+
+  const addCustomSport = () => {
+    const trimmed = customSport.trim();
+    if (trimmed && !formData.sports.includes(trimmed)) {
+      setFormData(prev => ({
+        ...prev,
+        sports: [...prev.sports, trimmed],
+      }));
+      setCustomSport('');
+    }
+  };
+
+  const removeSport = (sport: string) => {
+    setFormData(prev => ({
+      ...prev,
+      sports: prev.sports.filter(s => s !== sport),
+    }));
   };
 
   return (
@@ -66,30 +100,74 @@ export default function EventForm({ initialData, onSubmit, onCancel, isSubmittin
           {errors.eventName && <p className="text-sm text-destructive">{errors.eventName}</p>}
         </div>
 
+        <div className="space-y-2">
+          <Label>Sports *</Label>
+          <div className="flex flex-wrap gap-2 mb-2">
+            {formData.sports.map(sport => (
+              <Badge key={sport} variant="secondary" className="gap-1">
+                {sport}
+                <button
+                  type="button"
+                  onClick={() => removeSport(sport)}
+                  className="ml-1 hover:text-destructive"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            {SPORT_OPTIONS.map(sport => (
+              <div key={sport} className="flex items-center space-x-2">
+                <Checkbox
+                  id={`sport-${sport}`}
+                  checked={formData.sports.includes(sport)}
+                  onCheckedChange={() => toggleSport(sport)}
+                />
+                <Label htmlFor={`sport-${sport}`} className="text-sm cursor-pointer">
+                  {sport}
+                </Label>
+              </div>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-2">
+            <Input
+              placeholder="Add custom sport"
+              value={customSport}
+              onChange={(e) => setCustomSport(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addCustomSport();
+                }
+              }}
+            />
+            <Button type="button" variant="outline" onClick={addCustomSport}>
+              Add
+            </Button>
+          </div>
+          {errors.sports && <p className="text-sm text-destructive">{errors.sports}</p>}
+        </div>
+
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="eventDate">Event Date *</Label>
+            <Label htmlFor="eventDateFrom">From Date *</Label>
             <Input
-              id="eventDate"
+              id="eventDateFrom"
               type="date"
-              value={formData.eventDate.toISOString().split('T')[0]}
-              onChange={(e) => setFormData({ ...formData, eventDate: new Date(e.target.value) })}
+              value={formData.eventDateFrom.toISOString().split('T')[0]}
+              onChange={(e) => setFormData({ ...formData, eventDateFrom: new Date(e.target.value) })}
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="eventType">Event Type *</Label>
-            <Select value={formData.eventType} onValueChange={(value) => setFormData({ ...formData, eventType: value })}>
-              <SelectTrigger id="eventType">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Cricket">Cricket</SelectItem>
-                <SelectItem value="Badminton">Badminton</SelectItem>
-                <SelectItem value="Football">Football</SelectItem>
-                <SelectItem value="Volleyball">Volleyball</SelectItem>
-                <SelectItem value="Custom">Custom</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="eventDateTo">To Date *</Label>
+            <Input
+              id="eventDateTo"
+              type="date"
+              value={formData.eventDateTo.toISOString().split('T')[0]}
+              onChange={(e) => setFormData({ ...formData, eventDateTo: new Date(e.target.value) })}
+            />
+            {errors.eventDateTo && <p className="text-sm text-destructive">{errors.eventDateTo}</p>}
           </div>
         </div>
 

@@ -1,139 +1,43 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-18T09:11:27.351Z",
-  "summary": "The diff adds a Motoko backend actor with access control + user profiles and an event model, plus a dark-themed mobile-first React UI shell with bottom navigation, login/profile setup, and voice input plumbing. However, several core product requirements (especially the specified event schema/derived fields, stable persistence, dashboard/calendar/payments behaviors, offline sync, and reminders) are either not evidenced in the diff or appear implemented with a different data model than requested.",
+  "generatedAt": "2026-02-18T12:14:47.465Z",
+  "summary": "Most requested functional changes appear implemented: Event Details now refetches fresh event data via React Query settings/invalidation (REQ-16), Location is not shown on Event Details (REQ-17), events support multiple sports end-to-end (REQ-18), and date range is introduced in backend types and frontend adapter/pages with range display logic (REQ-19). However, the backend constraint of keeping all logic in a single actor file (backend/main.mo) is violated by adding a separate backend/migration.mo module. Additionally, several unrequested features related to Google Sheets import/routing appear to have been added.",
   "missing_requirements": [
     {
-      "id": "REQ-1",
-      "requirement": "Backend event data model must store the specified fields (name, date, startTime, endTime, location, organizerName/Phone/Email?, totalAmount, advancePaid, eventType, requirements flags, specialNotes, status) and expose CRUD + list with derived fields like pendingAmount and payment status; persist across upgrades via stable storage.",
-      "reason": "The backend Event type shown uses a different schema (title, dateTimestamp, services, attendees, pricePerPerson, flatFee, amountPaid, createdAt, lastModified) and there is no evidence of required fields, pendingAmount computation, payment status derivation, or stable storage patterns in the provided backend snippet.",
+      "id": "REQ-19",
+      "requirement": "Use English labels for the date range fields (e.g., \"From\" and \"To\") in Add/Edit Event forms.",
+      "reason": "EventForm.tsx is truncated before showing the actual date range inputs, so the presence of explicit English labels \"From\" and \"To\" cannot be confirmed from the provided diff summary.",
       "evidence": [
-        "backend/main.mo"
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "requirement": "Dashboard (Home) must show 4 metrics and upcoming events (next 7 days) plus quick actions, with reactive updates after CRUD.",
-      "reason": "HomeDashboard is referenced in routing, but no implementation is shown in the diff summary; therefore the required metrics computations and upcoming list behavior are not evidenced.",
-      "evidence": [
-        "frontend/src/App.tsx"
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "requirement": "Add Event form must include all specified fields and provide local autosave/draft behavior with discard control.",
-      "reason": "EventForm shows validation and pendingAmount calculation, and includes voice input, but the form fields in the snippet do not evidence the complete set (e.g., organizerEmail optional, start/end time, status, specialNotes, explicit requirements flags list), and no draft autosave/restore/discard mechanism is evidenced.",
-      "evidence": [
-        "frontend/src/components/events/EventForm.tsx"
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "requirement": "Event Details screen must show all event info, payment summary, requirements checklist, and actions: Edit, Delete (with confirmation), Mark as Completed.",
-      "reason": "EventDetailsPage is referenced, and a DeleteEventDialog exists, but there is no evidence of the details layout, paid/unpaid indicator, or a 'Mark as Completed' action updating status.",
-      "evidence": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/events/DeleteEventDialog.tsx"
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "requirement": "Monthly calendar view with month navigation, date selection, event list for the day, event details navigation, and color/indicator rules (today blue, upcoming green, overdue-payment red).",
-      "reason": "CalendarPage is referenced in routing, but no calendar implementation or visual highlighting rules are evidenced in the provided diff summary.",
-      "evidence": [
-        "frontend/src/App.tsx"
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "requirement": "Payments screen lists events with pendingAmount > 0, shows total pending, supports month filtering, and navigates to event details.",
-      "reason": "PaymentsPage is referenced in routing, but no evidence is shown for filtering by month, pendingAmount-based filtering, or total pending computation.",
-      "evidence": [
-        "frontend/src/App.tsx"
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "requirement": "Offline-capable storage: local cache for offline load, offline CRUD with queued sync, reconciliation on reconnect, and clear offline/pending indication.",
-      "reason": "A SyncStatusBar and useConnectivity exist, but pendingChanges is hardcoded to 0 and there is no evidence of local event caching, mutation queueing, or sync/reconciliation logic.",
-      "evidence": [
-        "frontend/src/components/status/SyncStatusBar.tsx",
-        "frontend/src/hooks/useConnectivity.ts"
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "requirement": "In-browser reminder system with notification permission UX, scheduled checks (1 day before, morning-of, payment reminders), deduping, and in-app fallback panel/badge when notifications unavailable.",
-      "reason": "No notification permission flow, scheduling/checking logic, payment reminder rules, or in-app reminder fallback UI is evidenced in the diff summary.",
-      "evidence": [
-        "frontend/src/App.tsx"
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "requirement": "Single-user access approach: scope all data to a single owner/identity; non-owner sees access denied and no data exposure.",
-      "reason": "While AccessDeniedScreen exists and the backend checks a generic '#user' permission, the frontend RootComponent does not show any access-denied gating (it only gates on authentication and presence of a user profile). No owner-scoping behavior is evidenced.",
-      "evidence": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/auth/AccessDeniedScreen.tsx",
-        "backend/main.mo"
+        "frontend/src/components/events/EventForm.tsx (truncated)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "User profile management (get/save profile) as a first-class backend feature and a mandatory profile-setup modal.",
-      "reason": "The BuildRequest focuses on single-user sports event tracking; it does not request user profile CRUD or a name profile setup flow as a requirement.",
+      "description": "Introduced backend migration module (backend/migration.mo) and wired it into backend/main.mo via actor migration, breaking the constraint that the backend must remain a single Motoko actor with all logic in backend/main.mo.",
+      "reason": "BuildRequest explicitly constrains backend logic to remain in backend/main.mo; the diff adds a separate backend/migration.mo file and imports it in backend/main.mo.",
       "evidence": [
-        "backend/main.mo",
-        "frontend/src/components/auth/ProfileSetupModal.tsx",
-        "frontend/src/hooks/useQueries.ts",
-        "frontend/src/App.tsx"
+        "backend/migration.mo",
+        "backend/main.mo (imports Migration \"migration\" and uses \"with migration = Migration.run\")"
       ]
     },
     {
-      "description": "Complex access control initialization via a secret admin token parameter (\"caffeineAdminToken\") and authorization mixins.",
-      "reason": "REQ-11 asks for a simple single-user access approach (optionally Internet Identity). The diff introduces an admin-token initialization mechanism and generalized permission roles, which were not requested.",
+      "description": "Added/extended Google Sheets/CSV import related functionality and routing (e.g., /import route, sheet event mapping utilities, dashboard import button).",
+      "reason": "The BuildRequest does not request any import feature work; diff summary and new/modified files indicate import mapping and routing support.",
       "evidence": [
-        "frontend/src/hooks/useActor.ts",
-        "backend/main.mo"
-      ]
-    },
-    {
-      "description": "Backend event schema oriented around services/attendees/pricePerPerson/flatFee rather than the specified sports event fields.",
-      "reason": "The requested app requires a specific event schema (organizer contacts, start/end times, requirements flags, status, notes, and payment fields). The diff implements a different product/data concept not asked for.",
-      "evidence": [
-        "backend/main.mo"
+        "frontend/src/utils/sheetEventMapping.ts",
+        "frontend-file-summaries.txt (mentions new /import route and Google Sheets import button in HomeDashboard)"
       ]
     }
   ],
   "confidence": 0.74,
   "changed_files": [
-    "all_files_summary.json",
     "backend/main.mo",
+    "backend/migration.mo",
     "frontend-file-summaries.txt",
-    "frontend/index.css",
-    "frontend/index.html",
-    "frontend/src/App.tsx",
-    "frontend/src/components/auth/AccessDeniedScreen.tsx",
-    "frontend/src/components/auth/LoginButton.tsx",
-    "frontend/src/components/auth/ProfileSetupModal.tsx",
-    "frontend/src/components/branding/AppBranding.tsx",
-    "frontend/src/components/empty/EmptyState.tsx",
-    "frontend/src/components/events/DeleteEventDialog.tsx",
     "frontend/src/components/events/EventForm.tsx",
-    "frontend/src/components/events/VoiceInputButton.tsx",
-    "frontend/src/components/layout/AppShell.tsx",
-    "frontend/src/components/layout/BottomNav.tsx",
-    "frontend/src/components/status/SyncStatusBar.tsx",
-    "frontend/src/hooks/useActor.ts",
-    "frontend/src/hooks/useConnectivity.ts",
-    "frontend/src/hooks/useInternetIdentity.ts",
     "frontend/src/hooks/useQueries.ts",
-    "frontend/src/hooks/useSpeechRecognition.ts",
-    "frontend/src/index.css",
-    "frontend/src/main.tsx",
     "frontend/src/pages/AddEventPage.tsx",
     "frontend/src/pages/CalendarPage.tsx",
     "frontend/src/pages/EditEventPage.tsx",
@@ -141,11 +45,9 @@
     "frontend/src/pages/HomeDashboard.tsx",
     "frontend/src/pages/PaymentsPage.tsx",
     "frontend/src/utils/bookingParser.ts",
-    "frontend/src/utils/date.ts",
     "frontend/src/utils/eventAdapter.ts",
     "frontend/src/utils/eventMetrics.ts",
-    "frontend/src/utils/urlParams.ts",
-    "frontend/tailwind.config.js",
+    "frontend/src/utils/sheetEventMapping.ts",
     "project_state.json"
   ]
 }

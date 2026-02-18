@@ -90,7 +90,7 @@ export default function PaymentsPage() {
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold truncate">{event.formData.eventName}</h3>
                       <p className="text-sm text-muted-foreground">
-                        {formatDate(event.formData.eventDate)}
+                        {formatDate(event.formData.eventDateFrom)}
                       </p>
                       <p className="text-sm text-muted-foreground">{event.formData.organizerName}</p>
                     </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useAddEvent } from '../hooks/useQueries';
-import { formDataToBackendParams, type EventFormData } from '../utils/eventAdapter';
+import { formDataToBackendInput, type EventFormData } from '../utils/eventAdapter';
 import EventForm from '../components/events/EventForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -16,7 +16,8 @@ export default function AddEventPage() {
 
   const initialFormData: EventFormData = {
     eventName: '',
-    eventDate: new Date(),
+    eventDateFrom: new Date(),
+    eventDateTo: new Date(),
     startTime: '09:00',
     endTime: '17:00',
     location: '',
@@ -25,7 +26,7 @@ export default function AddEventPage() {
     organizerEmail: '',
     totalAmount: 0,
     advancePaid: 0,
-    eventType: 'Cricket',
+    sports: [],
     requirements: {
       cafeteria: false,
       actionCamera: false,
@@ -44,7 +45,12 @@ export default function AddEventPage() {
       try {
         const parsed = JSON.parse(saved);
         setShowDraftBanner(true);
-        return { ...parsed, eventDate: new Date(parsed.eventDate) };
+        return {
+          ...parsed,
+          eventDateFrom: new Date(parsed.eventDateFrom || parsed.eventDate),
+          eventDateTo: new Date(parsed.eventDateTo || parsed.eventDate),
+          sports: parsed.sports || (parsed.eventType ? [parsed.eventType] : []),
+        };
       } catch {
         return initialFormData;
       }
@@ -63,10 +69,10 @@ export default function AddEventPage() {
   }, [formData]);
 
   const handleSubmit = async (data: EventFormData) => {
-    const params = formDataToBackendParams(data);
-    await addEvent.mutateAsync(params);
+    const input = formDataToBackendInput(data);
+    const eventId = await addEvent.mutateAsync(input);
     localStorage.removeItem(DRAFT_KEY);
-    navigate({ to: '/' });
+    navigate({ to: '/event/$eventId', params: { eventId: eventId.toString() } });
   };
 
   const handleDiscard = () => {

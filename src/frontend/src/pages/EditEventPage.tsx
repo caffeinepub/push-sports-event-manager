@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { useGetEvent, useUpdateEvent } from '../hooks/useQueries';
-import { eventToFormData, formDataToBackendParams, type EventFormData } from '../utils/eventAdapter';
+import { eventToFormData, formDataToBackendInput, type EventFormData } from '../utils/eventAdapter';
 import EventForm from '../components/events/EventForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -25,10 +25,10 @@ export default function EditEventPage() {
   const initialData = eventToFormData(event);
 
   const handleSubmit = async (data: EventFormData) => {
-    const params = formDataToBackendParams(data);
+    const input = formDataToBackendInput(data);
     await updateEvent.mutateAsync({
       eventId: event.id,
-      ...params,
+      input,
     });
     navigate({ to: '/event/$eventId', params: { eventId: eventId } });
   };

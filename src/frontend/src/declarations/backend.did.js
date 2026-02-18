@@ -9,7 +9,18 @@
 import { IDL } from '@icp-sdk/core/candid';
 
 export const Time = IDL.Int;
+export const DateRange = IDL.Record({ 'to' : Time, 'from' : Time });
 export const Service = IDL.Record({ 'name' : IDL.Text, 'price' : IDL.Nat });
+export const EventInput = IDL.Record({
+  'title' : IDL.Text,
+  'pricePerPerson' : IDL.Nat,
+  'amountPaid' : IDL.Nat,
+  'attendees' : IDL.Nat,
+  'sports' : IDL.Vec(IDL.Text),
+  'dateRange' : DateRange,
+  'services' : IDL.Vec(Service),
+  'flatFee' : IDL.Opt(IDL.Nat),
+});
 export const EventId = IDL.Nat;
 export const UserRole = IDL.Variant({
   'admin' : IDL.Null,
@@ -19,12 +30,14 @@ export const UserRole = IDL.Variant({
 export const Event = IDL.Record({
   'id' : EventId,
   'title' : IDL.Text,
+  'externalId' : IDL.Opt(IDL.Text),
   'createdAt' : Time,
   'pricePerPerson' : IDL.Nat,
   'amountPaid' : IDL.Nat,
   'lastModified' : Time,
   'attendees' : IDL.Nat,
-  'dateTimestamp' : Time,
+  'sports' : IDL.Vec(IDL.Text),
+  'dateRange' : DateRange,
   'services' : IDL.Vec(Service),
   'flatFee' : IDL.Opt(IDL.Nat),
 });
@@ -32,26 +45,14 @@ export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
   '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-  'addEvent' : IDL.Func(
-      [
-        IDL.Text,
-        Time,
-        IDL.Vec(Service),
-        IDL.Nat,
-        IDL.Nat,
-        IDL.Opt(IDL.Nat),
-        IDL.Nat,
-      ],
-      [EventId],
-      [],
-    ),
+  'addEvent' : IDL.Func([EventInput], [EventId], []),
   'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
   'deleteEvent' : IDL.Func([EventId], [], []),
   'getAllEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
   'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
   'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
   'getEvent' : IDL.Func([EventId], [Event], ['query']),
-  'getEventsByDateRange' : IDL.Func([Time, Time], [IDL.Vec(Event)], ['query']),
+  'getEventsByDateRange' : IDL.Func([DateRange], [IDL.Vec(Event)], ['query']),
   'getUserProfile' : IDL.Func(
       [IDL.Principal],
       [IDL.Opt(UserProfile)],
@@ -59,27 +60,26 @@ export const idlService = IDL.Service({
     ),
   'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
   'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-  'updateEvent' : IDL.Func(
-      [
-        EventId,
-        IDL.Text,
-        Time,
-        IDL.Vec(Service),
-        IDL.Nat,
-        IDL.Nat,
-        IDL.Opt(IDL.Nat),
-        IDL.Nat,
-      ],
-      [],
-      [],
-    ),
+  'updateEvent' : IDL.Func([EventId, EventInput], [], []),
+  'upsertManyEvents' : IDL.Func([IDL.Vec(Event)], [], []),
 });
 
 export const idlInitArgs = [];
 
 export const idlFactory = ({ IDL }) => {
   const Time = IDL.Int;
+  const DateRange = IDL.Record({ 'to' : Time, 'from' : Time });
   const Service = IDL.Record({ 'name' : IDL.Text, 'price' : IDL.Nat });
+  const EventInput = IDL.Record({
+    'title' : IDL.Text,
+    'pricePerPerson' : IDL.Nat,
+    'amountPaid' : IDL.Nat,
+    'attendees' : IDL.Nat,
+    'sports' : IDL.Vec(IDL.Text),
+    'dateRange' : DateRange,
+    'services' : IDL.Vec(Service),
+    'flatFee' : IDL.Opt(IDL.Nat),
+  });
   const EventId = IDL.Nat;
   const UserRole = IDL.Variant({
     'admin' : IDL.Null,
@@ -89,12 +89,14 @@ export const idlFactory = ({ IDL }) => {
   const Event = IDL.Record({
     'id' : EventId,
     'title' : IDL.Text,
+    'externalId' : IDL.Opt(IDL.Text),
     'createdAt' : Time,
     'pricePerPerson' : IDL.Nat,
     'amountPaid' : IDL.Nat,
     'lastModified' : Time,
     'attendees' : IDL.Nat,
-    'dateTimestamp' : Time,
+    'sports' : IDL.Vec(IDL.Text),
+    'dateRange' : DateRange,
     'services' : IDL.Vec(Service),
     'flatFee' : IDL.Opt(IDL.Nat),
   });
@@ -102,30 +104,14 @@ export const idlFactory = ({ IDL }) => {
   
   return IDL.Service({
     '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
-    'addEvent' : IDL.Func(
-        [
-          IDL.Text,
-          Time,
-          IDL.Vec(Service),
-          IDL.Nat,
-          IDL.Nat,
-          IDL.Opt(IDL.Nat),
-          IDL.Nat,
-        ],
-        [EventId],
-        [],
-      ),
+    'addEvent' : IDL.Func([EventInput], [EventId], []),
     'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
     'deleteEvent' : IDL.Func([EventId], [], []),
     'getAllEvents' : IDL.Func([], [IDL.Vec(Event)], ['query']),
     'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
     'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
     'getEvent' : IDL.Func([EventId], [Event], ['query']),
-    'getEventsByDateRange' : IDL.Func(
-        [Time, Time],
-        [IDL.Vec(Event)],
-        ['query'],
-      ),
+    'getEventsByDateRange' : IDL.Func([DateRange], [IDL.Vec(Event)], ['query']),
     'getUserProfile' : IDL.Func(
         [IDL.Principal],
         [IDL.Opt(UserProfile)],
@@ -133,20 +119,8 @@ export const idlFactory = ({ IDL }) => {
       ),
     'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
     'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
-    'updateEvent' : IDL.Func(
-        [
-          EventId,
-          IDL.Text,
-          Time,
-          IDL.Vec(Service),
-          IDL.Nat,
-          IDL.Nat,
-          IDL.Opt(IDL.Nat),
-          IDL.Nat,
-        ],
-        [],
-        [],
-      ),
+    'updateEvent' : IDL.Func([EventId, EventInput], [], []),
+    'upsertManyEvents' : IDL.Func([IDL.Vec(Event)], [], []),
   });
 };
 

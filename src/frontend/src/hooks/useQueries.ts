@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useActor } from './useActor';
-import type { Event, EventId, UserProfile, Service } from '../backend';
+import type { Event, EventId, UserProfile, EventInput } from '../backend';
 import { toast } from 'sonner';
 
 export function useGetCallerUserProfile() {
@@ -48,6 +48,8 @@ export function useGetAllEvents() {
       return actor.getAllEvents();
     },
     enabled: !!actor && !isFetching,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
 
@@ -61,6 +63,8 @@ export function useGetEvent(eventId: string) {
       return actor.getEvent(BigInt(eventId));
     },
     enabled: !!actor && !isFetching && !!eventId,
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 }
 
@@ -69,25 +73,9 @@ export function useAddEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: {
-      title: string;
-      dateTimestamp: bigint;
-      services: Service[];
-      attendees: bigint;
-      pricePerPerson: bigint;
-      flatFee: bigint | null;
-      amountPaid: bigint;
-    }) => {
+    mutationFn: async (input: EventInput) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.addEvent(
-        params.title,
-        params.dateTimestamp,
-        params.services,
-        params.attendees,
-        params.pricePerPerson,
-        params.flatFee,
-        params.amountPaid
-      );
+      return actor.addEvent(input);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -104,27 +92,9 @@ export function useUpdateEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: {
-      eventId: EventId;
-      title: string;
-      dateTimestamp: bigint;
-      services: Service[];
-      attendees: bigint;
-      pricePerPerson: bigint;
-      flatFee: bigint | null;
-      amountPaid: bigint;
-    }) => {
+    mutationFn: async (params: { eventId: EventId; input: EventInput }) => {
       if (!actor) throw new Error('Actor not available');
-      return actor.updateEvent(
-        params.eventId,
-        params.title,
-        params.dateTimestamp,
-        params.services,
-        params.attendees,
-        params.pricePerPerson,
-        params.flatFee,
-        params.amountPaid
-      );
+      return actor.updateEvent(params.eventId, params.input);
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['events'] });
@@ -152,6 +122,29 @@ export function useDeleteEvent() {
     },
     onError: (error: Error) => {
       toast.error(`Failed to delete event: ${error.message}`);
+    },
+  });
+}
+
+export function useUpsertManyEvents() {
+  const { actor } = useActor();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (events: Event[]) => {
+      if (!actor) throw new Error('Actor not available');
+      return actor.upsertManyEvents(events);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['events'] });
+    },
+    onError: (error: Error) => {
+      const message = error.message || 'Unknown error';
+      if (message.includes('Unauthorized')) {
+        toast.error('You do not have permission to import events');
+      } else {
+        toast.error(`Import failed: ${message}`);
+      }
     },
   });
 }

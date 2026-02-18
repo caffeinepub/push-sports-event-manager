@@ -1,14 +1,14 @@
 import { useNavigate, useParams } from '@tanstack/react-router';
 import { useGetEvent, useDeleteEvent, useUpdateEvent } from '../hooks/useQueries';
-import { enrichEvent, formDataToBackendParams } from '../utils/eventAdapter';
-import { formatDate } from '../utils/date';
+import { enrichEvent, formDataToBackendInput } from '../utils/eventAdapter';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Edit, Trash2, CheckCircle, MapPin, User, Phone, Mail, Clock, DollarSign } from 'lucide-react';
+import { Edit, Trash2, CheckCircle, User, Phone, Mail, Clock, DollarSign } from 'lucide-react';
 import DeleteEventDialog from '../components/events/DeleteEventDialog';
 import { useState } from 'react';
+import { isSameDay } from 'date-fns';
 
 export default function EventDetailsPage() {
   const navigate = useNavigate();
@@ -40,16 +40,21 @@ export default function EventDetailsPage() {
 
   const handleMarkCompleted = async () => {
     const updatedFormData = { ...formData, status: 'Completed' as const };
-    const params = formDataToBackendParams(updatedFormData);
+    const input = formDataToBackendInput(updatedFormData);
     await updateEvent.mutateAsync({
       eventId: event.id,
-      ...params,
+      input,
     });
   };
 
   const requirements = Object.entries(formData.requirements)
     .filter(([_, enabled]) => enabled)
     .map(([key]) => key.replace(/([A-Z])/g, ' $1').trim());
+
+  const isSingleDay = isSameDay(formData.eventDateFrom, formData.eventDateTo);
+  const dateDisplay = isSingleDay
+    ? formData.eventDateFrom.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : `${formData.eventDateFrom.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${formData.eventDateTo.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
 
   return (
     <div className="space-y-6">
@@ -63,9 +68,13 @@ export default function EventDetailsPage() {
       <Card>
         <CardHeader>
           <div className="flex items-start justify-between">
-            <div>
+            <div className="flex-1">
               <CardTitle className="text-xl">{formData.eventName}</CardTitle>
-              <Badge variant="outline" className="mt-2">{formData.eventType}</Badge>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {formData.sports.map(sport => (
+                  <Badge key={sport} variant="outline">{sport}</Badge>
+                ))}
+              </div>
             </div>
           </div>
         </CardHeader>
@@ -76,23 +85,13 @@ export default function EventDetailsPage() {
               <div>
                 <p className="font-medium">Date & Time</p>
                 <p className="text-sm text-muted-foreground">
-                  {formatDate(formData.eventDate)}
+                  {dateDisplay}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   {formData.startTime} - {formData.endTime}
                 </p>
               </div>
             </div>
-
-            {formData.location && (
-              <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
-                <div>
-                  <p className="font-medium">Location</p>
-                  <p className="text-sm text-muted-foreground">{formData.location}</p>
-                </div>
-              </div>
-            )}
           </div>
 
           <Separator />

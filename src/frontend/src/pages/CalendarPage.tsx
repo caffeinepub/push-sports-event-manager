@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import { useGetAllEvents } from '../hooks/useQueries';
-import { enrichEvent } from '../utils/eventAdapter';
+import { enrichEvent, getPrimaryDate } from '../utils/eventAdapter';
 import { getEventsForDate, hasOverduePayment } from '../utils/eventMetrics';
-import { getCalendarDays, getMonthYear, nextMonth, prevMonth, isSameDayAs, isTodayDate, isSameMonthAs, formatTime } from '../utils/date';
+import { getCalendarDays, getMonthYear, nextMonth, prevMonth, isSameDayAs, isTodayDate, isSameMonthAs } from '../utils/date';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import EmptyState from '../components/empty/EmptyState';
-import { isPast, isFuture } from 'date-fns';
+import { isPast, isFuture, isSameDay } from 'date-fns';
 
 export default function CalendarPage() {
   const navigate = useNavigate();
@@ -140,9 +140,16 @@ export default function CalendarPage() {
                           <p className="text-sm text-muted-foreground">{event.formData.location}</p>
                         </div>
                         <div className="flex flex-col items-end gap-1">
-                          <Badge variant={isOverdue ? 'destructive' : 'secondary'}>
-                            {event.formData.eventType}
-                          </Badge>
+                          <div className="flex flex-wrap gap-1 justify-end">
+                            {event.formData.sports.slice(0, 2).map(sport => (
+                              <Badge key={sport} variant={isOverdue ? 'destructive' : 'secondary'}>
+                                {sport}
+                              </Badge>
+                            ))}
+                            {event.formData.sports.length > 2 && (
+                              <Badge variant="outline">+{event.formData.sports.length - 2}</Badge>
+                            )}
+                          </div>
                           {event.pendingAmount > 0 && (
                             <span className={`text-xs font-medium ${isOverdue ? 'text-destructive' : 'text-muted-foreground'}`}>
                               ₹{event.pendingAmount} {isOverdue ? 'overdue' : 'pending'}

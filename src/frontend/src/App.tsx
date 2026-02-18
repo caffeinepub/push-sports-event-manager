@@ -13,6 +13,7 @@ import AddEventPage from './pages/AddEventPage';
 import EditEventPage from './pages/EditEventPage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import PaymentsPage from './pages/PaymentsPage';
+import ImportFromSheetPage from './pages/ImportFromSheetPage';
 import AppBranding from './components/branding/AppBranding';
 
 function RootComponent() {
@@ -99,6 +100,12 @@ const paymentsRoute = createRoute({
   component: PaymentsPage,
 });
 
+const importRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/import',
+  component: ImportFromSheetPage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   calendarRoute,
@@ -106,6 +113,7 @@ const routeTree = rootRoute.addChildren([
   editEventRoute,
   eventDetailsRoute,
   paymentsRoute,
+  importRoute,
 ]);
 
 const router = createRouter({ routeTree });

@@ -1,8 +1,9 @@
-import type { Event, Service } from '../backend';
+import type { Event, EventInput } from '../backend';
 
 export interface EventFormData {
   eventName: string;
-  eventDate: Date;
+  eventDateFrom: Date;
+  eventDateTo: Date;
   startTime: string;
   endTime: string;
   location: string;
@@ -11,7 +12,7 @@ export interface EventFormData {
   organizerEmail: string;
   totalAmount: number;
   advancePaid: number;
-  eventType: string;
+  sports: string[];
   requirements: {
     cafeteria: boolean;
     actionCamera: boolean;
@@ -33,28 +34,8 @@ export interface EnrichedEvent extends Event {
 const METADATA_PREFIX = 'metadata:';
 const REQUIREMENT_PREFIX = 'req:';
 
-function createMetadataService(key: string, value: string): Service {
-  return {
-    name: `${METADATA_PREFIX}${key}`,
-    price: BigInt(0),
-  };
-}
-
-function createRequirementService(name: string, enabled: boolean): Service | null {
-  if (!enabled) return null;
-  return {
-    name: `${REQUIREMENT_PREFIX}${name}`,
-    price: BigInt(0),
-  };
-}
-
-function getMetadataValue(services: Service[], key: string): string {
-  const service = services.find(s => s.name === `${METADATA_PREFIX}${key}`);
-  return service ? service.name.replace(`${METADATA_PREFIX}${key}`, '') || '' : '';
-}
-
-function parseMetadata(services: Service[]): Partial<EventFormData> {
-  const metadata: any = {};
+function parseMetadata(services: Array<{ name: string; price: bigint }>): Record<string, string> {
+  const metadata: Record<string, string> = {};
   
   services.forEach(service => {
     if (service.name.startsWith(METADATA_PREFIX)) {
@@ -67,7 +48,7 @@ function parseMetadata(services: Service[]): Partial<EventFormData> {
   return metadata;
 }
 
-function parseRequirements(services: Service[]): EventFormData['requirements'] {
+function parseRequirements(services: Array<{ name: string; price: bigint }>): EventFormData['requirements'] {
   const requirements = {
     cafeteria: false,
     actionCamera: false,
@@ -93,31 +74,39 @@ export function eventToFormData(event: Event): EventFormData {
   const metadata = parseMetadata(event.services);
   const requirements = parseRequirements(event.services);
   
-  const eventDate = new Date(Number(event.dateTimestamp) / 1_000_000);
+  const eventDateFrom = new Date(Number(event.dateRange.from) / 1_000_000);
+  const eventDateTo = new Date(Number(event.dateRange.to) / 1_000_000);
   
   const totalAmount = Number(event.pricePerPerson) * Number(event.attendees) + 
                      (event.flatFee ? Number(event.flatFee) : 0);
   
+  // Backward compatibility: derive sports from eventType if sports array is empty
+  let sports = event.sports && event.sports.length > 0 ? [...event.sports] : [];
+  if (sports.length === 0 && metadata['eventType']) {
+    sports = [metadata['eventType']];
+  }
+  
   return {
     eventName: event.title,
-    eventDate,
-    startTime: metadata.startTime || '09:00',
-    endTime: metadata.endTime || '17:00',
-    location: metadata.location || '',
-    organizerName: metadata.organizerName || '',
-    organizerPhone: metadata.organizerPhone || '',
-    organizerEmail: metadata.organizerEmail || '',
+    eventDateFrom,
+    eventDateTo,
+    startTime: metadata['startTime'] || '09:00',
+    endTime: metadata['endTime'] || '17:00',
+    location: metadata['location'] || '',
+    organizerName: metadata['organizerName'] || '',
+    organizerPhone: metadata['organizerPhone'] || '',
+    organizerEmail: metadata['organizerEmail'] || '',
     totalAmount,
     advancePaid: Number(event.amountPaid),
-    eventType: metadata.eventType || 'Custom',
+    sports,
     requirements,
-    specialNotes: metadata.specialNotes || '',
-    status: (metadata.status as any) || 'Upcoming',
+    specialNotes: metadata['specialNotes'] || '',
+    status: (metadata['status'] as any) || 'Upcoming',
   };
 }
 
-export function formDataToBackendParams(formData: EventFormData) {
-  const services: Service[] = [];
+export function formDataToBackendInput(formData: EventFormData): EventInput {
+  const services: Array<{ name: string; price: bigint }> = [];
   
   // Add metadata services
   services.push({ name: `${METADATA_PREFIX}startTime:${formData.startTime}`, price: BigInt(0) });
@@ -126,21 +115,26 @@ export function formDataToBackendParams(formData: EventFormData) {
   services.push({ name: `${METADATA_PREFIX}organizerName:${formData.organizerName}`, price: BigInt(0) });
   services.push({ name: `${METADATA_PREFIX}organizerPhone:${formData.organizerPhone}`, price: BigInt(0) });
   services.push({ name: `${METADATA_PREFIX}organizerEmail:${formData.organizerEmail}`, price: BigInt(0) });
-  services.push({ name: `${METADATA_PREFIX}eventType:${formData.eventType}`, price: BigInt(0) });
   services.push({ name: `${METADATA_PREFIX}specialNotes:${formData.specialNotes}`, price: BigInt(0) });
   services.push({ name: `${METADATA_PREFIX}status:${formData.status}`, price: BigInt(0) });
   
   // Add requirement services
   Object.entries(formData.requirements).forEach(([key, enabled]) => {
-    const service = createRequirementService(key, enabled);
-    if (service) services.push(service);
+    if (enabled) {
+      services.push({ name: `${REQUIREMENT_PREFIX}${key}`, price: BigInt(0) });
+    }
   });
 
-  const dateTimestamp = BigInt(formData.eventDate.getTime() * 1_000_000);
+  const dateFrom = BigInt(formData.eventDateFrom.getTime() * 1_000_000);
+  const dateTo = BigInt(formData.eventDateTo.getTime() * 1_000_000);
   
   return {
     title: formData.eventName,
-    dateTimestamp,
+    dateRange: {
+      from: dateFrom,
+      to: dateTo,
+    },
+    sports: formData.sports,
     services,
     attendees: BigInt(1),
     pricePerPerson: BigInt(0),
@@ -160,4 +154,8 @@ export function enrichEvent(event: Event): EnrichedEvent {
     totalAmount,
     pendingAmount,
   };
+}
+
+export function getPrimaryDate(event: Event): Date {
+  return new Date(Number(event.dateRange.from) / 1_000_000);
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 3,
+  "projectStateVersion": 7,
   "summary": "Mobile-first single-user personal sports event manager (Push Sports Event Manager) with dashboard, calendar, event CRUD, reminders/notifications, payments tracking, offline secure storage, and voice input for quick event creation.",
   "architectural_notes": [
     "Single-user (personal/internal use) app; no multi-user access required.",
@@ -8,11 +8,15 @@
     "Pending Amount is auto-calculated (Total Event Amount - Advance Paid).",
     "Notifications required: 1 day before event, event morning, and pending-payment reminders.",
     "Voice input uses speech-to-text and intent/field extraction to populate Add Event form.",
-    "Mobile-first design with dark sports theme and bottom navigation (Home/Calendar/Add/Payments)."
+    "Mobile-first design with dark sports theme and bottom navigation (Home/Calendar/Add/Payments).",
+    "Consider optional Google Sheets connection for migrating/importing historical events and (if required) ongoing read/write sync with a specified spreadsheet.",
+    "Event model/UI should support multi-select sports per event (store as list).",
+    "Event scheduling should support a start and end datetime (from–to range) instead of a single date/time."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- App icon in a minimal sports style, dark theme with high contrast (app-icon.dim_512x512.png)\n- Subtle dark sports texture/background illustration (sports-bg.dim_1080x1920.png)\n- Empty state illustration for no events scheduled, dark sports theme (empty-events.dim_1200x800.png)",
+  "known_issues": [
+    "Voice input populates Add Event, but the Event Details page does not show the updated values (likely refresh/state sync issue)."
+  ],
+  "isFixRequest": true,
   "existing_features": [
     {
       "id": "feature-create-a-mobile-first-dark-sports-themed-ui-system-and-app-layout-including-a-persistent-bottom-navigation-bar-with-tabs-home-calendar-add-event-payments",
@@ -101,6 +105,54 @@
         "REQ-12"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-add-a-google-sheets-import-flow-that-lets-the-user-copy-all-previous-events-from-an-existing-google-sheet-into-the-app-by-providing-a-google-sheets-publish-to-web-csv-url-or-pasted-csv-content-mapping-rows-into-the-app-s-existing-event-model-and-creating-the-imported-events-in-the-motoko-backend",
+      "title": "Add a Google Sheets import flow that lets the user copy all previous events from an existing Google Sheet into the app by providing a Google Sheets \"Publish to web\" CSV URL (or pasted CSV content), mapping rows into the app’s existing Event model, and creating the imported events in the Motoko backend.",
+      "reqIds": [
+        "REQ-13"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-support-updating-existing-app-events-from-the-same-google-sheet-on-subsequent-sync-runs-by-matching-rows-using-a-stable-external-identifier-column-configured-during-import-and-applying-updates-to-existing-events-in-the-motoko-backend",
+      "title": "Support updating existing app events from the same Google Sheet on subsequent sync runs by matching rows using a stable external identifier column (configured during import) and applying updates to existing events in the Motoko backend.",
+      "reqIds": [
+        "REQ-14"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-fix-the-issue-where-events-created-edited-using-voice-input-do-not-reflect-the-latest-values-when-viewing-the-event-details-page-ensure-the-event-details-view-always-displays-the-just-saved-event-data-without-requiring-a-manual-refresh",
+      "title": "Fix the issue where events created/edited using Voice Input do not reflect the latest values when viewing the Event Details page (ensure the Event Details view always displays the just-saved event data without requiring a manual refresh).",
+      "reqIds": [
+        "REQ-16"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-remove-the-event-location-section-field-from-the-event-details-page-ui-do-not-display-location-in-the-details-view-even-if-it-exists-in-stored-data",
+      "title": "Remove the Event Location section/field from the Event Details page UI (do not display location in the details view even if it exists in stored data).",
+      "reqIds": [
+        "REQ-17"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-support-selecting-multiple-sports-for-a-single-event-in-the-add-event-and-edit-event-forms-and-display-multiple-selected-sports-on-the-event-details-page",
+      "title": "Support selecting multiple sports for a single event in the Add Event and Edit Event forms, and display multiple selected sports on the Event Details page.",
+      "reqIds": [
+        "REQ-18"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-change-event-date-input-from-a-single-date-to-a-date-range-from-to-for-add-event-and-edit-event-and-show-the-range-on-event-details-use-english-labels-for-the-range-fields-e-g-from-and-to",
+      "title": "Change event date input from a single date to a date range (from–to) for Add Event and Edit Event, and show the range on Event Details. Use English labels for the range fields (e.g., \"From\" and \"To\").",
+      "reqIds": [
+        "REQ-19"
+      ],
+      "version": 1
     }
   ],
   "new_feature_requests": [
@@ -164,6 +216,44 @@
       "reqIds": [
         "REQ-1"
       ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-11",
+      "summary": "Google Sheets integration to import/copy existing events from a linked sheet and keep updates in sync (read/write)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-14",
+      "summary": "Extend the Motoko backend API to efficiently upsert (create/update) multiple events in one request for Google Sheet import/sync, while maintaining the existing access-control checks and event validation rules.",
+      "reqIds": [
+        "REQ-15"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "AR-15",
+      "summary": "Fix: events created/filled via Voice Input should correctly reflect/refresh on the Event Details page",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-16",
+      "summary": "Update Event Details screen to hide/remove the Event Location field",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-17",
+      "summary": "Support selecting multiple sports for a single event (multi-select)",
+      "reqIds": [],
+      "status": "pending"
+    },
+    {
+      "id": "AR-18",
+      "summary": "Change event date field to a date/time range (from–to) instead of a single date",
+      "reqIds": [],
       "status": "pending"
     }
   ],

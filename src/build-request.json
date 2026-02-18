@@ -1,266 +1,96 @@
 {
   "kind": "build_request",
-  "title": "Push Sports Event Manager — Mobile-first personal sports event tracker with calendar, payments, reminders, and voice input",
+  "title": "Fix Event Details refresh, hide location, support multi-sport and date range",
   "projectName": "Push Sports Event Manager",
   "priority": "normal",
   "requirements": [
     {
-      "id": "REQ-1",
-      "text": "Implement single-user event data model and persistence in the Motoko backend, including create/read/update/delete operations for events and derived fields needed by the UI (pendingAmount, payment status, etc.).",
-      "target": "backend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Store data securely for single user",
-          "Add New Event form fields including amounts and Pending Amount (Auto Calculate: Total - Advance)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Backend exposes methods to create, update, delete, and list events.",
-        "Each event stores: name, date, startTime, endTime, location, organizerName, organizerPhone, organizerEmail(optional), totalAmount, advancePaid, eventType, requirements flags, specialNotes, status (Upcoming/Completed/Cancelled).",
-        "pendingAmount is computed consistently as totalAmount - advancePaid (never negative).",
-        "Data persists across canister upgrades via stable storage patterns (no migration file unless state changes later)."
-      ]
-    },
-    {
-      "id": "REQ-2",
-      "text": "Create a mobile-first dark sports themed UI system and app layout, including a persistent bottom navigation bar with tabs: Home, Calendar, Add Event, Payments.",
+      "id": "REQ-16",
+      "text": "Fix the issue where events created/edited using Voice Input do not reflect the latest values when viewing the Event Details page (ensure the Event Details view always displays the just-saved event data without requiring a manual refresh).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-8"
         ],
         "quotes": [
-          "Mobile first layout",
-          "Dark sports theme",
-          "Easy bottom navigation bar: Home, Calendar, Add Event, Payments"
+          "I see it takes the Voice input but not update on the details page."
         ]
       },
       "acceptanceCriteria": [
-        "App is optimized for small screens first (comfortable touch targets, vertical layouts).",
-        "Consistent dark sports theme applied across screens (backgrounds, typography, cards, buttons).",
-        "Bottom navigation is always accessible and highlights the active tab.",
-        "All user-facing text is in English."
+        "After using Voice Input to populate fields and saving the event, opening the Event Details page shows the saved values (event name/type, date/time, organizer, payments, requirements, notes).",
+        "After editing an event (including changes coming from Voice Input) and saving, returning to Event Details shows updated values immediately.",
+        "No manual browser refresh is required for Event Details to show the newest saved data."
       ]
     },
     {
-      "id": "REQ-3",
-      "text": "Build the Dashboard (Home screen) to display: Total Events This Month, Upcoming Events (Next 7 Days), Total Revenue This Month, Total Pending Payments, and quick actions (+ Add New Event, Calendar View).",
+      "id": "REQ-17",
+      "text": "Remove the Event Location section/field from the Event Details page UI (do not display location in the details view even if it exists in stored data).",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-8"
+        ],
+        "quotes": [
+          "In event details page we don't want event location"
+        ]
+      },
+      "acceptanceCriteria": [
+        "Event Details page no longer renders the Location label/value or the location icon/section.",
+        "All other Event Details sections (date/time, organizer, payment summary, requirements, notes, actions) continue to work."
+      ]
+    },
+    {
+      "id": "REQ-18",
+      "text": "Support selecting multiple sports for a single event in the Add Event and Edit Event forms, and display multiple selected sports on the Event Details page.",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-8"
         ],
         "quotes": [
-          "DASHBOARD (Home Screen) - Show Total Events This Month - Show Upcoming Events (Next 7 Days) - Show Total Revenue This Month - Show Total Pending Payments - Quick Button: + Add New Event - Quick Button: Calendar View"
+          "And we need option to select multiple sports."
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard shows four summary metrics computed from stored events.",
-        "Upcoming events list shows events occurring within the next 7 days ordered by date/time.",
-        "Quick buttons navigate to Add Event and Calendar screens.",
-        "Metrics update after creating/editing/deleting events without requiring a full page reload."
+        "Add Event form allows selecting more than one sport for an event.",
+        "Edit Event form loads and allows modifying the previously selected multiple sports.",
+        "Event Details shows all selected sports (not just one).",
+        "Existing events that only have a single sport/event type continue to display sensibly (e.g., treated as a single selected sport)."
       ]
     },
     {
-      "id": "REQ-4",
-      "text": "Implement the Add New Event form with all specified fields, validation, and auto-calculation of Pending Amount (Total Event Amount - Advance Paid). Include autosave/draft behavior to prevent losing data on navigation/refresh.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "ADD NEW EVENT FORM Fields Required: ... Pending Amount (Auto Calculate: Total - Advance) ... Requirements (Checkboxes) ... Event Status (Upcoming / Completed / Cancelled)",
-          "Offline capable",
-          "Auto-save events"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All listed fields are present with appropriate input types (date picker, time picker, numeric inputs, long text, dropdown, checkboxes).",
-        "Pending Amount is read-only and updates instantly when Total or Advance changes.",
-        "Form prevents saving when required fields are missing (show inline errors).",
-        "Autosave stores an in-progress draft locally and restores it when returning to the Add Event screen (with a clear way to discard draft).",
-        "On successful save, the new event appears in Calendar/Home/Payments as applicable."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Implement Event Details screen that displays all event information including payment summary and requirements checklist, and provides actions: Edit, Delete, Mark as Completed.",
+      "id": "REQ-19",
+      "text": "Change event date input from a single date to a date range (from–to) for Add Event and Edit Event, and show the range on Event Details. Use English labels for the range fields (e.g., \"From\" and \"To\").",
       "target": "both",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-8"
         ],
         "quotes": [
-          "EVENT DETAILS PAGE Show: - All event information - Payment Summary - Requirements Checklist - Edit Button - Delete Button - Mark as Completed Button"
+          "And for event date we need from when to when"
         ]
       },
       "acceptanceCriteria": [
-        "Details page shows all stored fields in a readable mobile layout.",
-        "Payment summary includes totalAmount, advancePaid, pendingAmount and a clear paid/unpaid indicator.",
-        "Edit navigates to an edit form populated with the existing event data.",
-        "Delete requires confirmation and removes the event from all lists and calendar indicators.",
-        "Mark as Completed updates status and is reflected everywhere (dashboard metrics, calendar highlighting, payments list)."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Create a Monthly Calendar view that supports selecting a date to view that day’s events list, and selecting an event to open its details. Add visual highlighting rules: upcoming events in green, today’s events in blue, and events with overdue payments marked with a red indicator.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "CALENDAR VIEW (VERY IMPORTANT) - Monthly Calendar View - Show events on selected date - Clicking on a date shows: - List of events for that date - Clicking on an event opens full details page - Highlight: - Upcoming events in green - Today’s events in blue - Overdue payments in red indicator"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Calendar shows a month grid with the ability to move between months.",
-        "Selecting a date shows a list of events for that date.",
-        "Selecting an event navigates to the Event Details page.",
-        "Today’s date and today’s events are visually distinguished in blue.",
-        "Upcoming events (future-dated) are visually distinguished in green.",
-        "Events with pendingAmount > 0 and event date in the past show a red overdue-payment indicator in the calendar and in the date event list."
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Implement a Payments screen that lists all events with pendingAmount > 0, displays total pending amount, and supports filtering by month.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "PAYMENTS SCREEN - List all events with pending amount > 0 - Show total pending amount - Filter by month"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Payments screen only shows events where pendingAmount > 0.",
-        "Total pending amount is displayed and matches the sum of listed items under the active filter.",
-        "User can filter by month and the list + total update accordingly.",
-        "Tapping an event navigates to the Event Details page."
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Add an offline-capable storage strategy: cache events locally for fast load and offline access, and sync changes to the Motoko backend when connectivity is available (single-user).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Store data securely for single user",
-          "Offline capable",
-          "Auto-save events"
-        ]
-      },
-      "acceptanceCriteria": [
-        "App loads previously fetched events from local storage when offline.",
-        "User can create/edit/delete events while offline; changes are queued locally.",
-        "When connectivity is restored, queued changes sync to the backend and UI reconciles without data loss.",
-        "User has a clear indication when the app is offline and/or when changes are pending sync."
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Implement an in-browser reminder system that triggers local notifications (where supported) for: 1 day before an event, the morning of the event, and payment reminders when pendingAmount > 0.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "REMINDER SYSTEM - Send mobile notification 1 day before event - Send notification on event morning - If Pending Amount > 0, show payment reminder notification"
-        ]
-      },
-      "acceptanceCriteria": [
-        "App requests notification permission with a clear explanation and allows continuing without enabling notifications.",
-        "When notifications are permitted, the app schedules/checks reminders locally and triggers notifications at the correct times while the app is active (and where the browser permits background notifications).",
-        "If pendingAmount > 0, the app shows a payment reminder notification according to a defined rule (e.g., on event morning and/or after event date passes) and does not spam duplicates.",
-        "If notifications are not permitted/available, the app shows an in-app reminders panel/badge as a fallback."
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Add a voice input feature on the Add Event screen: provide a microphone button that uses browser speech-to-text to capture a spoken booking sentence and auto-fill matching form fields (event name/type/date/time, organizer, amounts, requirements flags, location when stated).",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "VOICE INPUT FEATURE - Add microphone button on Add Event page - Allow speech-to-text - Convert spoken input into form fields Example: \"Book cricket event on March 15 from 9 AM to 3 PM, Rahul organizer, 5000 advance, needs cafeteria and camera.\" - Auto-fill matching fields"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Microphone button starts/stops speech recognition and shows listening state.",
-        "Recognized text is displayed for review.",
-        "App parses common phrases to populate fields (at minimum: eventType from sport words, date, start/end time, organizer name when stated, advance paid, and requirements checkboxes like cafeteria/camera).",
-        "User can edit any auto-filled fields before saving.",
-        "If speech recognition is not supported, feature degrades gracefully with a helpful message."
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "text": "Add a simple single-user access approach suitable for personal internal use (no multi-user sharing).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "This app is only for personal internal use (single user access)."
-        ]
-      },
-      "acceptanceCriteria": [
-        "App prevents accidental multi-user use by scoping all data to a single identity/session model (e.g., a single authenticated principal or a single configured owner).",
-        "If authentication is used, it relies only on Internet Identity (no third-party auth).",
-        "If the user is not the designated user/owner, the app shows an access denied state and does not expose event data."
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "text": "Generate and include basic static visual assets for the app (icon and a subtle sports-themed background/empty state) and render them from frontend static assets.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Dark sports theme",
-          "Clean and minimal UI"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Generated images are placed under frontend/public/assets/generated and used in the UI (e.g., app icon/branding and at least one empty state).",
-        "Assets do not require backend routing and load correctly in production build."
+        "Add Event form captures an event date range with a start (From) date and an end (To) date.",
+        "Edit Event form loads an existing event’s date range and allows editing it.",
+        "Event Details displays the date range in a clear From–To format.",
+        "Existing events without an end date continue to work (e.g., end date defaults to start date or displays as a single-day range).",
+        "Calendar sorting/highlighting and month filtering continue to function (at minimum using the range start date as the event’s primary date for existing logic)."
       ]
     }
   ],
   "constraints": [
-    "Backend must remain a single-actor Motoko architecture; place all backend logic in the main actor file specified by the template.",
-    "Do not edit files under frontend immutable paths: frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, frontend/src/components/ui (compose them instead).",
-    "Use React + TypeScript with Tailwind + shadcn UI components and React Query for data fetching/state as per template stack.",
-    "No external databases or third-party notification services; reminders must be implemented with in-browser capabilities and in-app fallbacks."
+    "Frontend must not modify files under frontend/src/components/ui or any paths listed in frontend.immutablePaths.",
+    "Backend must remain a single Motoko actor with all logic in backend/main.mo.",
+    "Use English for any user-facing text."
   ],
   "nonGoals": [
-    "Multi-user accounts, team sharing, or role-based access control.",
-    "True OS-level push notifications that work when the browser/app is fully closed across all platforms (not reliably possible as a pure web app).",
-    "Integration with external calendars (Google/Apple) or external messaging (SMS/WhatsApp/email).",
-    "Real-time features (WebSockets/chat)."
+    "Adding multi-user sharing or permissions changes beyond the existing single-user access approach.",
+    "Changing the offline sync architecture beyond what is required to make Event Details reflect the latest saved event data.",
+    "Removing the location field from the Add/Edit forms or from storage (only hide it on the Event Details page)."
   ],
   "imageRequirements": {
-    "required": [
-      "App icon in a minimal sports style, dark theme with high contrast (app-icon.dim_512x512.png)",
-      "Subtle dark sports texture/background illustration (sports-bg.dim_1080x1920.png)",
-      "Empty state illustration for no events scheduled, dark sports theme (empty-events.dim_1200x800.png)"
-    ],
+    "required": [],
     "edits": []
   },
   "userProfileUpdate": {
